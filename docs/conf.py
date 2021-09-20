@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # webapp2 documentation build configuration file, created by
 # sphinx-quickstart on Sat Jul 31 10:41:37 2010.
@@ -10,7 +9,7 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-import mock
+from unittest import mock
 import os
 import sys
 from pkg_resources import get_distribution
@@ -77,8 +76,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'webapp2'
-copyright = u'2011, webapp2 AUTHORS'
+project = 'webapp2'
+copyright = '2011, webapp2 AUTHORS'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -222,8 +221,8 @@ htmlhelp_basename = 'webapp2doc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'webapp2.tex', u'webapp2 Documentation',
-   u'Rodrigo Moraes', 'manual'),
+  ('index', 'webapp2.tex', 'webapp2 Documentation',
+   'Rodrigo Moraes', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -255,8 +254,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'webapp2', u'webapp2 Documentation',
-     [u'Rodrigo Moraes'], 1)
+    ('index', 'webapp2', 'webapp2 Documentation',
+     ['Rodrigo Moraes'], 1)
 ]
 
 

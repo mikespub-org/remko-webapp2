@@ -43,8 +43,7 @@ def pytest_configure():
 def pytest_ignore_collect(path, config):
     """Skip App Engine tests in python 3 or if no SDK is available."""
     if 'gae' in str(path):
-        if six.PY3:
-            return True
+        return True
         if 'GAE_SDK_PATH' not in os.environ:
             return True
     return False

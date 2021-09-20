@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -96,10 +95,10 @@ class TestMiscellaneous(BaseTestCase):
     def test_to_utf8(self):
         res = webapp2._to_utf8('ábcdéf'.decode('utf-8')
                                if six.PY2 else 'ábcdéf')
-        self.assertIsInstance(res, six.binary_type, True)
+        self.assertIsInstance(res, bytes, True)
 
         res = webapp2._to_utf8('abcdef')
-        self.assertIsInstance(res, six.binary_type, True)
+        self.assertIsInstance(res, bytes, True)
 
     '''
     # removed to simplify the codebase.
@@ -125,7 +124,7 @@ class TestMiscellaneous(BaseTestCase):
     def test_cached_property(self):
         count = [0]
 
-        class Foo(object):
+        class Foo:
             @webapp2.cached_property
             def bar(self):
                 count[0] += 1

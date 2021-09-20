@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +18,6 @@ webapp2_extras.appengine.sessions_ndb
 
 Extended sessions stored in datastore using the ndb library.
 """
-from __future__ import absolute_import
 
 from google.appengine.api import memcache
 from webapp2_extras import sessions
@@ -45,7 +43,7 @@ except ImportError:  # pragma: no cover
                 return value
 
             def _db_set_value(self, v, p, value):
-                super(PickleProperty, self)._db_set_value(
+                super()._db_set_value(
                     v, p, pickle.dumps(value))
 
             def _db_get_value(self, v, p):
@@ -84,7 +82,7 @@ class Session(model.Model):
     def _put(self):
         """Saves the session and updates the memcache entry."""
         memcache.set(self._key.id(), self.data)
-        super(Session, self).put()
+        super().put()
 
 
 class DatastoreSessionFactory(sessions.CustomBackendSessionFactory):

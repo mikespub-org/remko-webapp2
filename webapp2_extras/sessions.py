@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -88,7 +87,7 @@ default_config = {
 _default_value = object()
 
 
-class _UpdateDictMixin(object):
+class _UpdateDictMixin:
     """Makes dicts call `self.on_update` on modifications.
 
     From werkzeug.datastructures.
@@ -129,7 +128,7 @@ class SessionDict(_UpdateDictMixin, dict):
     def pop(self, key, *args):
         # Only pop if key doesn't exist, do not alter the dictionary.
         if key in self:
-            return super(SessionDict, self).pop(key, *args)
+            return super().pop(key, *args)
         if args:
             return args[0]
         raise KeyError(key)
@@ -160,7 +159,7 @@ class SessionDict(_UpdateDictMixin, dict):
         self.setdefault(key, []).append((value, level))
 
 
-class BaseSessionFactory(object):
+class BaseSessionFactory:
     """Base class for all session factories."""
 
     #: Name of the session.
@@ -245,7 +244,7 @@ class CustomBackendSessionFactory(BaseSessionFactory):
         return security.generate_random_string(entropy=128)
 
 
-class SessionStore(object):
+class SessionStore:
     """A session provider for a single request.
 
     The session store can provide multiple sessions using different keys,
@@ -338,7 +337,7 @@ class SessionStore(object):
         """
         backends = self.config['backends']
         backend = backends[name]
-        if isinstance(backend, six.string_types):
+        if isinstance(backend, str):
             backend = backends[name] = webapp2.import_string(backend)
 
         return backend

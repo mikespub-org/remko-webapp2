@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -104,7 +103,7 @@ class TestMemcacheSession(test_base.BaseTestCase):
         session = store.get_session(backend='memcache')
 
         flashes = session.get_flashes()
-        self.assertEqual(flashes, [(u'foo', None)])
+        self.assertEqual(flashes, [('foo', None)])
 
         flashes = session.get_flashes()
         self.assertEqual(flashes, [])
@@ -125,7 +124,7 @@ class TestMemcacheSession(test_base.BaseTestCase):
         session = store.get_session(backend='memcache')
 
         flashes = session.get_flashes()
-        self.assertEqual(flashes, [(u'bar', None), (u'baz', 'important')])
+        self.assertEqual(flashes, [('bar', None), ('baz', 'important')])
 
         flashes = session.get_flashes()
         self.assertEqual(flashes, [])

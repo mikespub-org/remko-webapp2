@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -166,7 +165,7 @@ class UserToken(model.Model):
             ``model.Key`` containing a string id in the following format:
             ``{user_id}.{subject}.{token}.``
         """
-        return model.Key(cls, '%s.%s.%s' % (str(user), subject, token))
+        return model.Key(cls, '{}.{}.{}'.format(str(user), subject, token))
 
     @classmethod
     def create(cls, user, subject, token=None):
@@ -251,7 +250,7 @@ class User(model.Expando):
             caused creation to fail.
         """
         self.auth_ids.append(auth_id)
-        unique = '%s.auth_id:%s' % (self.__class__.__name__, auth_id)
+        unique = '{}.auth_id:{}'.format(self.__class__.__name__, auth_id)
         ok = self.unique_model.create(unique)
         if ok:
             self.put()
@@ -416,10 +415,10 @@ class User(model.Expando):
         user = cls(**user_values)
 
         # Set up unique properties.
-        uniques = [('%s.auth_id:%s' % (cls.__name__, auth_id), 'auth_id')]
+        uniques = [('{}.auth_id:{}'.format(cls.__name__, auth_id), 'auth_id')]
         if unique_properties:
             for name in unique_properties:
-                key = '%s.%s:%s' % (cls.__name__, name, user_values[name])
+                key = '{}.{}:{}'.format(cls.__name__, name, user_values[name])
                 uniques.append((key, name))
 
         ok, existing = cls.unique_model.create_multi(k for k, v in uniques)

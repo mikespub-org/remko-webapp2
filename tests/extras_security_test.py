@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,14 +62,14 @@ class TestSecurity(unittest.TestCase):
         self.assertFalse(security.check_password_hash(password, ''))
 
         hashval1 = security.hash_password(
-            six.text_type(password), 'sha1', u'bar')
+            str(password), 'sha1', 'bar')
         hashval2 = security.hash_password(
-            six.text_type(password), 'sha1', u'bar')
+            str(password), 'sha1', 'bar')
         self.assertTrue(hashval1 is not None)
         self.assertEqual(hashval1, hashval2)
 
-        hashval1 = security.hash_password(six.text_type(password), 'md5', None)
-        hashval2 = security.hash_password(six.text_type(password), 'md5', None)
+        hashval1 = security.hash_password(str(password), 'md5', None)
+        hashval2 = security.hash_password(str(password), 'md5', None)
         self.assertTrue(hashval1 is not None)
         self.assertEqual(hashval1, hashval2)
 

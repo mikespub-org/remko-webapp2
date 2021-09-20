@@ -23,7 +23,7 @@ from webapp2_extras.appengine.auth import models
 class TestAuth(test_base.BaseTestCase):
 
     def setUp(self):
-        super(TestAuth, self).setUp()
+        super().setUp()
         self.register_model('User', models.User)
         self.register_model('UserToken', models.UserToken)
         self.register_model('Unique', models.Unique)

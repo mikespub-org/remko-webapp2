@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +24,7 @@ import webapp2
 from webob import exc
 
 
-class MultiRoute(object):
+class MultiRoute:
     """Base class for routes with nested routes."""
 
     routes = None
@@ -43,8 +42,7 @@ class MultiRoute(object):
                 for r in route.get_routes():
                     self.children.append(r)
 
-        for rv in self.children:
-            yield rv
+        yield from self.children
 
     def get_match_children(self):
         if self.match_children is None:
@@ -53,8 +51,7 @@ class MultiRoute(object):
                 for r in route.get_match_routes():
                     self.match_children.append(r)
 
-        for rv in self.match_children:
-            yield rv
+        yield from self.match_children
 
     def get_build_children(self):
         if self.build_children is None:
@@ -63,8 +60,7 @@ class MultiRoute(object):
                 for n, r in route.get_build_routes():
                     self.build_children[n] = r
 
-        for rv in six.iteritems(self.build_children):
-            yield rv
+        yield from self.build_children.items()
 
     get_routes = get_children
     get_match_routes = get_match_children
@@ -99,7 +95,7 @@ class DomainRoute(MultiRoute):
         :param routes:
             A list of :class:`webapp2.Route` instances.
         """
-        super(DomainRoute, self).__init__(routes)
+        super().__init__(routes)
         self.template = template
 
     def get_match_routes(self):
@@ -159,7 +155,7 @@ class NamePrefixRoute(MultiRoute):
         :param routes:
             A list of :class:`webapp2.Route` instances.
         """
-        super(NamePrefixRoute, self).__init__(routes)
+        super().__init__(routes)
         self.prefix = prefix
         # Prepend a prefix to a route attribute.
         for route in self.get_routes():
@@ -213,7 +209,7 @@ class PathPrefixRoute(NamePrefixRoute):
         """
         assert prefix.startswith('/') and not prefix.endswith('/'), \
             'Path prefixes must start with a slash but not end with a slash.'
-        super(PathPrefixRoute, self).__init__(prefix, routes)
+        super().__init__(prefix, routes)
 
     def get_match_routes(self):
         # This route will do pre-matching before matching the nested routes!
@@ -280,7 +276,7 @@ class RedirectRoute(webapp2.Route):
             - Access to ``/foo/`` will redirect to ``/foo``.
             - Access to ``/bar`` will redirect to ``/bar/``.
         """
-        super(RedirectRoute, self).__init__(
+        super().__init__(
             template, handler=handler, name=name, defaults=defaults,
             build_only=build_only, handler_method=handler_method,
             methods=methods, schemes=schemes)

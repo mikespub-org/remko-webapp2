@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,17 +19,16 @@ from tests import test_base
 import webapp2
 
 
-class NoStringOrUnicodeConversion(object):
+class NoStringOrUnicodeConversion:
     pass
 
 
-class StringConversion(object):
+class StringConversion:
     def __str__(self):
-        return 'foo' if six.PY3 else 'foo'.encode('utf-8')
+        return 'foo' if six.PY3 else b'foo'
 
 
-@six.python_2_unicode_compatible
-class UnicodeConversion(object):
+class UnicodeConversion:
     def __str__(self):
         return 'bar'
 
@@ -80,7 +78,7 @@ class TestResponse(test_base.BaseTestCase):
     def test_write2(self):
         rsp = webapp2.Response()
         rsp.charset = None
-        rsp.write(u'foo')
+        rsp.write('foo')
 
         self.assertEqual(rsp.body, b'foo')
         self.assertEqual(rsp.charset, 'utf-8')
@@ -94,9 +92,9 @@ class TestResponse(test_base.BaseTestCase):
 
         rsp = webapp2.Response()
         rsp.charset = None
-        rsp.write(u'föö')
+        rsp.write('föö')
 
-        self.assertEqual(rsp.body, u'föö'.encode('utf-8'))
+        self.assertEqual(rsp.body, 'föö'.encode())
 
     def test_status(self):
         rsp = webapp2.Response()
@@ -105,7 +103,7 @@ class TestResponse(test_base.BaseTestCase):
         self.assertEqual(rsp.status_int, 200)
         self.assertEqual(rsp.status_message, 'OK')
 
-        rsp.status = u'200 OK'
+        rsp.status = '200 OK'
         self.assertEqual(rsp.status, '200 OK')
         self.assertEqual(rsp.status_int, 200)
         self.assertEqual(rsp.status_message, 'OK')

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -110,11 +109,11 @@ class TestRequest(BaseTestCase):
 
         res = req.GET.get('1')
         self.assertEqual(res, '2')
-        self.assertTrue(isinstance(res, six.text_type))
+        self.assertTrue(isinstance(res, str))
 
         res = req.POST.get('3')
         self.assertEqual(res, '4')
-        self.assertTrue(isinstance(res, six.text_type))
+        self.assertTrue(isinstance(res, str))
 
     def test_cookie_unicode(self):
         import base64
@@ -123,7 +122,7 @@ class TestRequest(BaseTestCase):
 
         # With base64 ---------------------------------------------------------
 
-        value = webapp2._to_basestring(base64.b64encode(u'á'.encode('utf-8')))
+        value = webapp2._to_basestring(base64.b64encode('á'.encode()))
         rsp = webapp2.Response()
         rsp.set_cookie('foo', value)
 
@@ -134,12 +133,12 @@ class TestRequest(BaseTestCase):
 
         self.assertEqual(
             base64.b64decode(req.cookies.get('foo')).decode('utf-8'),
-            u'á'
+            'á'
         )
 
         # Without quote -------------------------------------------------------
 
-        value = u'föö=bär; föo, bär, bäz=dïng;'
+        value = 'föö=bär; föo, bär, bäz=dïng;'
         rsp = webapp2.Response()
         rsp.set_cookie('foo', value)
 
@@ -151,7 +150,7 @@ class TestRequest(BaseTestCase):
         # With quote, hard way ------------------------------------------------
 
         # Here is our test value.
-        x = u'föö'
+        x = 'föö'
         # We must store cookies quoted. To quote unicode, we need to encode it.
         y = quote(x.encode('utf8'))
         # The encoded, quoted string looks ugly.
@@ -177,16 +176,13 @@ class TestRequest(BaseTestCase):
         # before we had a chance to unquote it.
 
         # w = unquote(req.cookies.get('foo').encode('utf8')).decode('utf8')
-        if six.PY2:
-            w = unquote(req.cookies.get('foo').encode('utf8')).decode('utf8')
-        else:
-            w = unquote(req.cookies.get('foo'))
+        w = unquote(req.cookies.get('foo'))
         # And it is indeed the same value.
         self.assertEqual(w, x)
 
         # With quote, easy way ------------------------------------------------
 
-        value = u'föö=bär; föo, bär, bäz=dïng;'
+        value = 'föö=bär; föo, bär, bäz=dïng;'
         quoted_value = quote(value.encode('utf8'))
         rsp = webapp2.Response()
         rsp.set_cookie('foo', quoted_value)
@@ -196,11 +192,7 @@ class TestRequest(BaseTestCase):
 
         cookie_value = req.cookies.get('foo')
 
-        if six.PY2:
-            unquoted_cookie_value = unquote(
-                cookie_value.encode('utf8')).decode('utf8')
-        else:
-            unquoted_cookie_value = unquote(cookie_value)
+        unquoted_cookie_value = unquote(cookie_value)
         self.assertEqual(cookie_value, quoted_value)
         self.assertEqual(unquoted_cookie_value, value)
 

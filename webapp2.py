@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -133,7 +132,7 @@ _webapp_status_reasons = {
     505: 'HTTP Version not supported',
 }
 status_reasons.update(_webapp_status_reasons)
-for code, message in six.iteritems(_webapp_status_reasons):
+for code, message in _webapp_status_reasons.items():
     cls = exc.status_map.get(code)
     if cls:
         cls.title = message
@@ -183,7 +182,7 @@ class Request(webob.Request):
 
         kwargs['charset'] = 'utf-8'
 
-        super(Request, self).__init__(environ, *args, **kwargs)
+        super().__init__(environ, *args, **kwargs)
         self.registry = {}
 
     def get(self, argument_name, default_value='', allow_multiple=False):
@@ -248,7 +247,7 @@ class Request(webob.Request):
         if param_value is None or len(param_value) == 0:
             return default_value
 
-        for i in six.moves.range(len(param_value)):
+        for i in range(len(param_value)):
             if isinstance(param_value[i], cgi.FieldStorage):
                 param_value[i] = param_value[i].value
 
@@ -297,7 +296,7 @@ class Request(webob.Request):
               headers=None, **kwargs):  # pragma: no cover
         """Adds parameters compatible with WebOb > 1.2: POST and **kwargs."""
         try:
-            request = super(Request, cls).blank(
+            request = super().blank(
                 path,
                 environ=environ,
                 base_url=base_url,
@@ -326,7 +325,7 @@ class Request(webob.Request):
             environ['CONTENT_LENGTH'] = str(len(data))
             environ['CONTENT_TYPE'] = 'application/x-www-form-urlencoded'
 
-        base = super(Request, cls).blank(path, environ=environ,
+        base = super().blank(path, environ=environ,
                                          base_url=base_url, headers=headers)
         if kwargs:
             obj = cls(base.environ, **kwargs)
@@ -366,7 +365,7 @@ class ResponseHeaders(BaseResponseHeaders):
             k = k.replace('_', '-')
             if v is not None and len(v) > 0:
                 v = v.replace('\\', '\\\\').replace('"', r'\"')
-                parts.append('%s="%s"' % (k, v))
+                parts.append('{}="{}"'.format(k, v))
             else:
                 parts.append(k)
 
@@ -400,7 +399,7 @@ class Response(webob.Response):
 
     def __init__(self, *args, **kwargs):
         """Constructs a response with the default settings."""
-        super(Response, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.headers['Cache-Control'] = 'no-cache'
 
     @property
@@ -418,22 +417,22 @@ class Response(webob.Response):
         if six.PY3 and isinstance(text, bytes):
             text = text.decode(self.default_charset)
 
-        if not isinstance(text, six.string_types):
-            text = six.text_type(text)
+        if not isinstance(text, str):
+            text = str(text)
 
-        if isinstance(text, six.text_type) and not self.charset:
+        if isinstance(text, str) and not self.charset:
             self.charset = self.default_charset
 
-        super(Response, self).write(text)
+        super().write(text)
 
     def _set_status(self, value):
         """The status string, including code and message."""
         message = None
         # Accept long because urlfetch in App Engine returns codes as longs.
-        if isinstance(value, six.integer_types):
+        if isinstance(value, int):
             code = int(value)
         else:
-            if isinstance(value, six.text_type):
+            if isinstance(value, str):
                 # Status messages have to be ASCII safe, so this is OK.
                 value = str(value)
 
@@ -535,7 +534,7 @@ class Response(webob.Response):
         return message
 
 
-class RequestHandler(object):
+class RequestHandler:
     """Base HTTP request handler.
 
     Implements most of ``webapp.RequestHandler`` interface.
@@ -724,7 +723,7 @@ class RedirectHandler(RequestHandler):
         self.redirect(uri, permanent=permanent, code=code)
 
 
-class cached_property(object):
+class cached_property:
     """A decorator that converts a function into a lazy property.
 
     The function wrapped is called the first time to retrieve the result
@@ -774,7 +773,7 @@ class cached_property(object):
             return value
 
 
-class BaseRoute(object):
+class BaseRoute:
     """Interface for URI routes."""
 
     #: The regex template.
@@ -897,7 +896,7 @@ class SimpleRoute(BaseRoute):
             return self, match.groups(), {}
 
     def __repr__(self):
-        return '<SimpleRoute(%r, %r)>' % (self.template, self.handler)
+        return '<SimpleRoute({!r}, {!r})>'.format(self.template, self.handler)
 
 
 class Route(BaseRoute):
@@ -987,12 +986,12 @@ class Route(BaseRoute):
             A sequence of URI schemes, e.g., ``['http']`` or ``['https']``.
             If set, the route will only match requests with these schemes.
         """
-        super(Route, self).__init__(template, handler=handler, name=name,
+        super().__init__(template, handler=handler, name=name,
                                     build_only=build_only)
         self.defaults = defaults or {}
         self.methods = methods
         self.schemes = schemes
-        if isinstance(handler, six.string_types) and ':' in handler:
+        if isinstance(handler, str) and ':' in handler:
             if handler_method:
                 raise ValueError(
                     "If handler_method is defined in a Route, handler "
@@ -1065,13 +1064,13 @@ class Route(BaseRoute):
                     kwargs[key] = value
 
         values = {}
-        for name, regex in six.iteritems(variables):
+        for name, regex in variables.items():
             value = kwargs.pop(name, self.defaults.get(name))
             if value is None:
                 raise KeyError('Missing argument "%s" to build URI.' %
                                name.strip('_'))
 
-            if not isinstance(value, six.string_types):
+            if not isinstance(value, str):
                 value = str(value)
 
             if not regex.match(value):
@@ -1090,7 +1089,7 @@ class Route(BaseRoute):
                 self.build_only)
 
 
-class BaseHandlerAdapter(object):
+class BaseHandlerAdapter:
     """A basic adapter to dispatch a handler.
 
     This is used when the handler is a simple function: it just calls the
@@ -1149,7 +1148,7 @@ class Webapp2HandlerAdapter(BaseHandlerAdapter):
         return handler.dispatch()
 
 
-class Router(object):
+class Router:
     """A URI router used to match, dispatch and build URIs."""
 
     #: Class used when the route is set as a tuple.
@@ -1314,7 +1313,7 @@ class Router(object):
 
         if route.handler_adapter is None:
             handler = route.handler
-            if isinstance(handler, six.string_types):
+            if isinstance(handler, str):
                 if handler not in self.handlers:
                     self.handlers[handler] = handler = import_string(handler)
                 else:
@@ -1354,7 +1353,7 @@ class Router(object):
 
     def __repr__(self):
         routes = self.match_routes + [
-            v for k, v in six.iteritems(self.build_routes)
+            v for k, v in self.build_routes.items()
             if v not in self.match_routes
         ]
 
@@ -1421,10 +1420,10 @@ class Config(dict):
         missing = [k for k in required_keys if config.get(k) is None]
         if missing:
             raise Exception(
-                'Missing configuration keys for %r: %r.' % (key, missing))
+                'Missing configuration keys for {!r}: {!r}.'.format(key, missing))
 
 
-class RequestContext(object):
+class RequestContext:
     """Context for a single request.
 
     The context is responsible for setting and cleaning global variables for
@@ -1474,7 +1473,7 @@ class RequestContext(object):
             self.app.clear_globals()
 
 
-class WSGIApplication(object):
+class WSGIApplication:
     """A WSGI-compliant application."""
 
     #: Allowed request methods.
@@ -1638,7 +1637,7 @@ class WSGIApplication(object):
 
         handler = self.error_handlers.get(code)
         if handler:
-            if isinstance(handler, six.string_types):
+            if isinstance(handler, str):
                 self.error_handlers[code] = handler = import_string(handler)
 
             return handler(request, response, e)
@@ -1931,9 +1930,9 @@ def _urlunsplit(scheme=None, netloc=None, path=None, query=None,
     if path:
         path = quote(_to_utf8(path))
 
-    if query and not isinstance(query, six.string_types):
+    if query and not isinstance(query, str):
         if isinstance(query, dict):
-            query = six.iteritems(query)
+            query = query.items()
 
         # Sort args: commonly needed to build signatures for services.
         query = urlencode(sorted(query))
@@ -1972,7 +1971,7 @@ def _to_utf8(value):
     """
     if isinstance(value, (bytes, type(None))):
         return value
-    if not isinstance(value, six.text_type):
+    if not isinstance(value, str):
         raise TypeError(
             "Expected bytes, unicode, or None; got %r" % type(value)
         )
@@ -1990,7 +1989,7 @@ def _to_basestring(value):
     the user supplied.  In python3, the two types are not interchangeable,
     so this method is needed to convert byte strings to unicode.
     """
-    if isinstance(value, six.string_types):
+    if isinstance(value, str):
         return value
     if not isinstance(value, bytes):
         raise TypeError(
@@ -2014,14 +2013,14 @@ def _parse_route_template(template, default_sufix=''):
             name = '__%d__' % args_count
             args_count += 1
 
-        pattern += '%s(?P<%s>%s)' % (re.escape(part), name, expr)
-        reverse_template += '%s%%(%s)s' % (part, name)
+        pattern += '{}(?P<{}>{})'.format(re.escape(part), name, expr)
+        reverse_template += '{}%({})s'.format(part, name)
         variables[name] = re.compile('^%s$' % expr)
 
     part = template[last:]
     kwargs_count = len(variables) - args_count
     reverse_template += part
-    regex = re.compile('^%s%s$' % (pattern, re.escape(part)))
+    regex = re.compile('^{}{}$'.format(pattern, re.escape(part)))
     return regex, reverse_template, args_count, kwargs_count, variables
 
 

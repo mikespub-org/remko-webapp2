@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +37,7 @@ default_config = {
 }
 
 
-class Mako(object):
+class Mako:
     """Wrapper for configurable and cached Mako environment.
 
     To used it, set it as a cached property in a base `RequestHandler`::
@@ -82,7 +81,7 @@ class Mako(object):
         )
 
         directories = config.get('template_path')
-        if isinstance(directories, six.string_types):
+        if isinstance(directories, str):
             directories = [directories]
 
         self.environment = lookup.TemplateLookup(directories=directories,

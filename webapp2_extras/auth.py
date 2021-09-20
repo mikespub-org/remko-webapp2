@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,7 +84,7 @@ class InvalidPasswordError(AuthError):
     """Raised when a user password doesn't match."""
 
 
-class AuthStore(object):
+class AuthStore:
     """Provides common utilities and configuration for :class:`Auth`."""
 
     #: Configuration key.
@@ -140,7 +139,7 @@ class AuthStore(object):
     def user_model(self):
         """Configured user model."""
         cls = self.config['user_model']
-        if isinstance(cls, six.string_types):
+        if isinstance(cls, str):
             cls = self.config['user_model'] = webapp2.import_string(cls)
 
         return cls
@@ -217,7 +216,7 @@ class AuthStore(object):
         if not user:
             return None
 
-        user_dict = dict((a, getattr(user, a)) for a in self.user_attributes)
+        user_dict = {a: getattr(user, a) for a in self.user_attributes}
         user_dict['user_id'] = user.get_id()
         return user_dict
 
@@ -350,7 +349,7 @@ class AuthStore(object):
         return valid
 
 
-class Auth(object):
+class Auth:
     """Authentication provider for a single request."""
 
     #: A :class:`webapp2.Request` instance.

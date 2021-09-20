@@ -31,7 +31,7 @@ class User(model.Model):
 class TestAuthModels(test_base.BaseTestCase):
 
     def setUp(self):
-        super(TestAuthModels, self).setUp()
+        super().setUp()
         self.register_model('User', models.User)
         self.register_model('UserToken', models.UserToken)
         self.register_model('Unique', models.Unique)
@@ -76,7 +76,7 @@ class TestAuthModels(test_base.BaseTestCase):
 
         # 3 extras and unique properties; plus 1 extra and not unique.
         extras = ['foo', 'bar', 'baz']
-        values = dict((v, v + '_value') for v in extras)
+        values = {v: v + '_value' for v in extras}
         values['ding'] = 'ding_value'
         success, info = m.create_user(auth_id='auth_id_2',
                                       unique_properties=extras, **values)
@@ -157,7 +157,7 @@ class TestAuthModels(test_base.BaseTestCase):
 
 class TestUniqueModel(test_base.BaseTestCase):
     def setUp(self):
-        super(TestUniqueModel, self).setUp()
+        super().setUp()
         self.register_model('Unique', models.Unique)
 
     def test_single(self):

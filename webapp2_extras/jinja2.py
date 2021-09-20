@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -69,7 +68,7 @@ default_config = {
 }
 
 
-class Jinja2(object):
+class Jinja2:
     """Wrapper for configurable and cached Jinja2 environment.
 
     To used it, set it as a cached property in a base `RequestHandler`::

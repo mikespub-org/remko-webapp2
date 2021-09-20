@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +19,6 @@ webapp2_extras.security
 Security related helpers such as secure password hashing tools and a
 random token generator.
 """
-from __future__ import division
 
 import hashlib
 import hmac
@@ -45,8 +43,7 @@ ASCII_PRINTABLE = string.ascii_letters + string.digits + string.punctuation
 ALL_PRINTABLE = string.printable
 PUNCTUATION = string.punctuation
 
-if six.PY3:
-    long = int
+long = int
 
 
 def generate_random_string(length=0, entropy=0, pool=ALPHANUMERIC):
@@ -108,7 +105,7 @@ def generate_random_string(length=0, entropy=0, pool=ALPHANUMERIC):
         log_of_2 = 0.6931471805599453
         length = long(math.ceil((log_of_2 / math.log(len(pool))) * entropy))
 
-    return ''.join(_rng.choice(pool) for _ in six.moves.range(length))
+    return ''.join(_rng.choice(pool) for _ in range(length))
 
 
 def generate_password_hash(password, method='sha1', length=22, pepper=None):
@@ -141,7 +138,7 @@ def generate_password_hash(password, method='sha1', length=22, pepper=None):
     if hashval is None:
         raise TypeError('Invalid method %r.' % method)
 
-    return '%s$%s$%s' % (hashval, method, salt)
+    return '{}${}${}'.format(hashval, method, salt)
 
 
 def check_password_hash(password, pwhash, pepper=None):

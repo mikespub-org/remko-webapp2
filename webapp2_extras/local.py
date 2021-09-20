@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,11 +50,10 @@ else:
         return get_current_thread(), get_current_greenlet()
 
 
-if six.PY3:  # pragma: no cover
-    long = int
+long = int
 
 
-class Local(object):
+class Local:
     """A container for thread-local objects.
 
     Attributes are assigned or retrieved using the current thread.
@@ -68,7 +66,7 @@ class Local(object):
         object.__setattr__(self, '__lock__', allocate_lock())
 
     def __iter__(self):
-        return six.iteritems(self.__storage__)
+        return self.__storage__.items()
 
     def __call__(self, proxy):
         """Creates a proxy for a name."""
@@ -110,8 +108,7 @@ class Local(object):
             self.__lock__.release()
 
 
-@six.python_2_unicode_compatible
-class LocalProxy(object):
+class LocalProxy:
     """Acts as a proxy for a local object.
 
     Forwards all operations to a proxied object. The only operations not

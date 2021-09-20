@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +29,7 @@ from webapp2_extras import json
 from webapp2_extras import security
 
 
-class SecureCookieSerializer(object):
+class SecureCookieSerializer:
     """Serializes and deserializes secure cookie values.
 
     Extracted from `Tornado`_ and modified.

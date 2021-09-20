@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,12 +25,12 @@ import webapp2
 
 
 try:
-    import mock
+    from unittest import mock
 except ImportError:
     from unittest import mock
 
 
-class BareHandler(object):
+class BareHandler:
     def __init__(self, request, response):
         self.response = response
         response.write('I am not a RequestHandler but I work.')
@@ -113,7 +112,7 @@ def handle_500(request, response, exception):
 
 class PositionalHandler(webapp2.RequestHandler):
     def get(self, month, day, slug=None):
-        self.response.out.write('%s:%s:%s' % (month, day, slug))
+        self.response.out.write('{}:{}:{}'.format(month, day, slug))
 
 
 class HandlerWithError(webapp2.RequestHandler):
@@ -196,7 +195,7 @@ The resource could not be found.
 
 class TestHandler(BaseTestCase):
     def tearDown(self):
-        super(TestHandler, self).tearDown()
+        super().tearDown()
         app.error_handlers = {}
 
     def test_200(self):
@@ -802,7 +801,7 @@ class TestHandler(BaseTestCase):
 
     def test_factory_2(self):
         """Very crazy stuff. Please ignore it."""
-        class MyHandler(object):
+        class MyHandler:
             def __init__(self, request, response):
                 self.request = request
                 self.response = response
@@ -855,7 +854,7 @@ class TestHandler(BaseTestCase):
             headers=[('Content-Type',
                       'application/x-www-form-urlencoded; charset=utf-8')]
         )
-        self.assertEqual(rsp.unicode_body, u'föö')
+        self.assertEqual(rsp.unicode_body, 'föö')
         self.assertEqual(rsp.body, value)
 
         rsp = app.get_response(
@@ -863,7 +862,7 @@ class TestHandler(BaseTestCase):
             POST={'foo': value},
             headers=[('Content-Type', 'application/x-www-form-urlencoded')]
         )
-        self.assertEqual(rsp.unicode_body, u'föö')
+        self.assertEqual(rsp.unicode_body, 'föö')
         self.assertEqual(rsp.body, value)
 
 

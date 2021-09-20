@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -120,7 +119,7 @@ class TestWebapp1(test_base.BaseTestCase):
         import urllib
 
         # This is the value we want to set.
-        initial_value = u'äëïöü'
+        initial_value = 'äëïöü'
         # WebOb version that comes with SDK doesn't quote cookie values.
         # So we have to do it.
         quoted_value = urllib.quote(initial_value.encode('utf-8'))

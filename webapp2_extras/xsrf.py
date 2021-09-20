@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,7 +43,7 @@ class XSRFTokenInvalid(XSRFException):
     pass
 
 
-class XSRFToken(object):
+class XSRFToken:
     _DELIMITER = b'|'
 
     def __init__(self, user_id, secret, current_time=None):

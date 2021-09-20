@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -96,7 +95,7 @@ default_config = {
 NullTranslations = gettext_stdlib.NullTranslations
 
 
-class I18nStore(object):
+class I18nStore:
     """Internalization store.
 
     Caches loaded translations and configuration to be used between requests.
@@ -155,7 +154,7 @@ class I18nStore(object):
         if func is None:
             self.locale_selector = self.default_locale_selector
         else:
-            if isinstance(func, six.string_types):
+            if isinstance(func, str):
                 func = webapp2.import_string(func)
 
             # Functions are descriptors, so bind it to this instance with
@@ -172,7 +171,7 @@ class I18nStore(object):
         if func is None:
             self.timezone_selector = self.default_timezone_selector
         else:
-            if isinstance(func, six.string_types):
+            if isinstance(func, str):
                 func = webapp2.import_string(func)
 
             self.timezone_selector = func.__get__(self, self.__class__)
@@ -230,7 +229,7 @@ class I18nStore(object):
         return trans or trans_null or NullTranslations()
 
 
-class I18n(object):
+class I18n:
     """Internalization provider for a single request."""
 
     #: A reference to :class:`I18nStore`.
@@ -351,7 +350,7 @@ class I18n(object):
             format = self.store.date_formats.get(key)
 
         if format in ('short', 'medium', 'full', 'long', 'iso'):
-            rv = self.store.date_formats.get('%s.%s' % (key, format))
+            rv = self.store.date_formats.get('{}.{}'.format(key, format))
             if rv is not None:
                 format = rv
 

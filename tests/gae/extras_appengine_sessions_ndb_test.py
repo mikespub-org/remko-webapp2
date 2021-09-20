@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2011 webapp2 AUTHORS.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +30,7 @@ class TestNdbSession(test_base.BaseTestCase):
     # factory = sessions_ndb.DatastoreSessionFactory
 
     def setUp(self):
-        super(TestNdbSession, self).setUp()
+        super().setUp()
         self.register_model('Session', sessions_ndb.Session)
 
     def test_get_save_session(self):
@@ -127,7 +126,7 @@ class TestNdbSession(test_base.BaseTestCase):
         session = store.get_session(backend='datastore')
 
         flashes = session.get_flashes()
-        self.assertEqual(flashes, [(u'foo', None)])
+        self.assertEqual(flashes, [('foo', None)])
 
         flashes = session.get_flashes()
         self.assertEqual(flashes, [])
@@ -148,7 +147,7 @@ class TestNdbSession(test_base.BaseTestCase):
         session = store.get_session(backend='datastore')
 
         flashes = session.get_flashes()
-        self.assertEqual(flashes, [(u'bar', None), (u'baz', 'important')])
+        self.assertEqual(flashes, [('bar', None), ('baz', 'important')])
 
         flashes = session.get_flashes()
         self.assertEqual(flashes, [])
