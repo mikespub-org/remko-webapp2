@@ -1,12 +1,12 @@
 # These dependencies match App Engine SDK versions.
-WebOb==1.6.1
-Jinja2==2.11.3
-Mako==1.0.4
-Babel==2.3.4
-pytz==2016.6.1
+WebOb==1.8.7
+Jinja2==3.0.1
+Mako==1.1.5
+Babel==2.9.1
+pytz==2021.1
 # These are test dependencies
-pytest==2.9.1
-pytest-cov==2.2.1
-mock==2.0.0
-six==1.10.0
-gcp-devrel-py-tools==0.0.8
+pytest==6.2.5
+pytest-cov==2.12.1
+mock==4.0.3
+six==1.16.0
+gcp-devrel-py-tools==0.0.16
