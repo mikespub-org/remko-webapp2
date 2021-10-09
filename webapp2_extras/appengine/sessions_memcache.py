@@ -57,4 +57,5 @@ class MemcacheSessionFactory(sessions.CustomBackendSessionFactory):
 
         memcache.set(self.sid, dict(self.session))
         self.session_store.save_secure_cookie(
-            response, self.name, {'_sid': self.sid}, **self.session_args)
+            response, self.name, {"_sid": self.sid}, **self.session_args
+        )

@@ -43,8 +43,7 @@ except ImportError:  # pragma: no cover
                 return value
 
             def _db_set_value(self, v, p, value):
-                super()._db_set_value(
-                    v, p, pickle.dumps(value))
+                super()._db_set_value(v, p, pickle.dumps(value))
 
             def _db_get_value(self, v, p):
                 if not v.has_stringvalue():
@@ -122,4 +121,5 @@ class DatastoreSessionFactory(sessions.CustomBackendSessionFactory):
 
         self.session_model(id=self.sid, data=dict(self.session))._put()
         self.session_store.save_secure_cookie(
-            response, self.name, {'_sid': self.sid}, **self.session_args)
+            response, self.name, {"_sid": self.sid}, **self.session_args
+        )

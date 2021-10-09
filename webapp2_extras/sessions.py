@@ -65,22 +65,21 @@ from webapp2_extras import security
 #:     A dictionary of available session backend classes used by
 #:     :meth:`SessionStore.get_session`.
 default_config = {
-    'secret_key':      None,
-    'cookie_name':     'session',
-    'session_max_age': None,
-    'cookie_args': {
-        'max_age':     None,
-        'domain':      None,
-        'path':        '/',
-        'secure':      None,
-        'httponly':    False,
+    "secret_key": None,
+    "cookie_name": "session",
+    "session_max_age": None,
+    "cookie_args": {
+        "max_age": None,
+        "domain": None,
+        "path": "/",
+        "secure": None,
+        "httponly": False,
     },
-    'backends': {
-        'securecookie': 'webapp2_extras.sessions.SecureCookieSessionFactory',
-        'datastore':    'webapp2_extras.appengine.sessions_ndb.'
-                        'DatastoreSessionFactory',
-        'memcache':     'webapp2_extras.appengine.sessions_memcache.'
-                        'MemcacheSessionFactory',
+    "backends": {
+        "securecookie": "webapp2_extras.sessions.SecureCookieSessionFactory",
+        "datastore": "webapp2_extras.appengine.sessions_ndb." "DatastoreSessionFactory",
+        "memcache": "webapp2_extras.appengine.sessions_memcache."
+        "MemcacheSessionFactory",
     },
 }
 
@@ -101,23 +100,24 @@ class _UpdateDictMixin:
             if self.on_update is not None:
                 self.on_update()
             return rv
+
         oncall.__name__ = name
         return oncall
 
-    __setitem__ = calls_update('__setitem__')
-    __delitem__ = calls_update('__delitem__')
-    clear = calls_update('clear')
-    pop = calls_update('pop')
-    popitem = calls_update('popitem')
-    setdefault = calls_update('setdefault')
-    update = calls_update('update')
+    __setitem__ = calls_update("__setitem__")
+    __delitem__ = calls_update("__delitem__")
+    clear = calls_update("clear")
+    pop = calls_update("pop")
+    popitem = calls_update("popitem")
+    setdefault = calls_update("setdefault")
+    update = calls_update("update")
     del calls_update
 
 
 class SessionDict(_UpdateDictMixin, dict):
     """A dictionary for session data."""
 
-    __slots__ = ('container', 'new', 'modified')
+    __slots__ = ("container", "new", "modified")
 
     def __init__(self, container, data=None, new=False):
         self.container = container
@@ -136,7 +136,7 @@ class SessionDict(_UpdateDictMixin, dict):
     def on_update(self):
         self.modified = True
 
-    def get_flashes(self, key='_flash'):
+    def get_flashes(self, key="_flash"):
         """Returns a flash message. Flash messages are deleted when first read.
 
         :param key:
@@ -146,7 +146,7 @@ class SessionDict(_UpdateDictMixin, dict):
         """
         return self.pop(key, [])
 
-    def add_flash(self, value, level=None, key='_flash'):
+    def add_flash(self, value, level=None, key="_flash"):
         """Adds a flash message. Flash messages are deleted when first read.
 
         :param value:
@@ -174,7 +174,7 @@ class BaseSessionFactory:
     def __init__(self, name, session_store):
         self.name = name
         self.session_store = session_store
-        self.session_args = session_store.config['cookie_args'].copy()
+        self.session_args = session_store.config["cookie_args"].copy()
         self.session = None
 
     def get_session(self, max_age=_default_value):
@@ -200,8 +200,7 @@ class SecureCookieSessionFactory(BaseSessionFactory):
 
     def get_session(self, max_age=_default_value):
         if self.session is None:
-            data = self.session_store.get_secure_cookie(self.name,
-                                                        max_age=max_age)
+            data = self.session_store.get_secure_cookie(self.name, max_age=max_age)
             new = data is None
             self.session = SessionDict(self, data=data, new=new)
 
@@ -212,7 +211,8 @@ class SecureCookieSessionFactory(BaseSessionFactory):
             return
 
         self.session_store.save_secure_cookie(
-            response, self.name, dict(self.session), **self.session_args)
+            response, self.name, dict(self.session), **self.session_args
+        )
 
 
 class CustomBackendSessionFactory(BaseSessionFactory):
@@ -222,13 +222,12 @@ class CustomBackendSessionFactory(BaseSessionFactory):
     sid = None
 
     #: Used to validate session ids.
-    _sid_re = re.compile(r'^\w{22}$')
+    _sid_re = re.compile(r"^\w{22}$")
 
     def get_session(self, max_age=_default_value):
         if self.session is None:
-            data = self.session_store.get_secure_cookie(self.name,
-                                                        max_age=max_age)
-            sid = data.get('_sid') if data else None
+            data = self.session_store.get_secure_cookie(self.name, max_age=max_age)
+            sid = data.get("_sid") if data else None
             self.session = self._get_by_sid(sid)
 
         return self.session
@@ -317,7 +316,7 @@ class SessionStore:
             self.config_key,
             default_values=default_config,
             user_values=config,
-            required_keys=('secret_key',)
+            required_keys=("secret_key",),
         )
         # Tracked sessions.
         self.sessions = {}
@@ -325,7 +324,7 @@ class SessionStore:
     @webapp2.cached_property
     def serializer(self):
         # Serializer and deserializer for signed cookies.
-        return securecookie.SecureCookieSerializer(self.config['secret_key'])
+        return securecookie.SecureCookieSerializer(self.config["secret_key"])
 
     def get_backend(self, name):
         """Returns a configured session backend, importing it if needed.
@@ -335,7 +334,7 @@ class SessionStore:
         :returns:
             A :class:`BaseSessionFactory` subclass.
         """
-        backends = self.config['backends']
+        backends = self.config["backends"]
         backend = backends[name]
         if isinstance(backend, str):
             backend = backends[name] = webapp2.import_string(backend)
@@ -350,8 +349,9 @@ class SessionStore:
 
         return self.sessions[name]
 
-    def get_session(self, name=None, max_age=_default_value, factory=None,
-                    backend='securecookie'):
+    def get_session(
+        self, name=None, max_age=_default_value, factory=None, backend="securecookie"
+    ):
         """Returns a session for a given name. If the session doesn't exist, a
         new session is returned.
 
@@ -377,10 +377,10 @@ class SessionStore:
             A dictionary-like session object.
         """
         factory = factory or self.get_backend(backend)
-        name = name or self.config['cookie_name']
+        name = name or self.config["cookie_name"]
 
         if max_age is _default_value:
-            max_age = self.config['session_max_age']
+            max_age = self.config["session_max_age"]
 
         container = self._get_session_container(name, factory)
         return container.get_session(max_age=max_age)
@@ -399,7 +399,7 @@ class SessionStore:
             A secure cookie value or None if it is not set.
         """
         if max_age is _default_value:
-            max_age = self.config['session_max_age']
+            max_age = self.config["session_max_age"]
 
         value = self.request.cookies.get(name)
         if value:
@@ -415,9 +415,8 @@ class SessionStore:
         :param kwargs:
             Options to save the cookie. See :meth:`get_session`.
         """
-        assert isinstance(value, dict), 'Secure cookie values must be a dict.'
-        container = self._get_session_container(name,
-                                                SecureCookieSessionFactory)
+        assert isinstance(value, dict), "Secure cookie values must be a dict."
+        container = self._get_session_container(name, SecureCookieSessionFactory)
         container.get_session().update(value)
         container.session_args.update(kwargs)
 
@@ -441,7 +440,7 @@ class SessionStore:
 
 
 #: Key used to store :class:`SessionStore` in the request registry.
-_registry_key = 'webapp2_extras.sessions.SessionStore'
+_registry_key = "webapp2_extras.sessions.SessionStore"
 
 
 def get_store(factory=SessionStore, key=_registry_key, request=None):
@@ -486,4 +485,4 @@ def set_store(store, key=_registry_key, request=None):
 
 
 # Don't need to import it. :)
-default_config['backends']['securecookie'] = SecureCookieSessionFactory
+default_config["backends"]["securecookie"] = SecureCookieSessionFactory

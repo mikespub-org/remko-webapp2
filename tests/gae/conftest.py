@@ -20,7 +20,7 @@ import six
 
 
 def pytest_configure():
-    if six.PY3 or 'GAE_SDK_PATH' not in os.environ:
+    if six.PY3 or "GAE_SDK_PATH" not in os.environ:
         return
 
     appengine.pytest_configure()
@@ -28,13 +28,15 @@ def pytest_configure():
     # Prune the SDK's webapp2 path from sys.path to prevent loading the SDK's
     # bundled webapp2.
     import dev_appserver
+
     gae_path = os.path.dirname(dev_appserver.__file__)
-    gae_webapp2_path = os.path.join(gae_path, 'lib', 'webapp2')
+    gae_webapp2_path = os.path.join(gae_path, "lib", "webapp2")
 
     sys.path = [path for path in sys.path if gae_webapp2_path not in path]
 
     # Activate a testbed with a memcache stub for pytz
     from google.appengine.ext import testbed
+
     bed = testbed.Testbed()
     bed.activate()
     bed.init_memcache_stub()
@@ -42,8 +44,8 @@ def pytest_configure():
 
 def pytest_ignore_collect(path, config):
     """Skip App Engine tests in python 3 or if no SDK is available."""
-    if 'gae' in str(path):
+    if "gae" in str(path):
         return True
-        if 'GAE_SDK_PATH' not in os.environ:
+        if "GAE_SDK_PATH" not in os.environ:
             return True
     return False

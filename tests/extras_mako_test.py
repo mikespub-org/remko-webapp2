@@ -20,23 +20,25 @@ from webapp2_extras import mako
 
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
-template_path = os.path.join(current_dir, 'resources', 'mako_templates')
+template_path = os.path.join(current_dir, "resources", "mako_templates")
 
 
 class TestMako(unittest.TestCase):
     def test_render_template(self):
-        app = webapp2.WSGIApplication(config={
-            'webapp2_extras.mako': {
-                'template_path': template_path,
-            },
-        })
-        req = webapp2.Request.blank('/')
+        app = webapp2.WSGIApplication(
+            config={
+                "webapp2_extras.mako": {
+                    "template_path": template_path,
+                },
+            }
+        )
+        req = webapp2.Request.blank("/")
         app.set_globals(app=app, request=req)
         m = mako.Mako(app)
 
-        message = 'Hello, World!'
-        res = m.render_template('template1.html', message=message)
-        self.assertEqual(res, message + '\n')
+        message = "Hello, World!"
+        res = m.render_template("template1.html", message=message)
+        self.assertEqual(res, message + "\n")
 
     def test_set_mako(self):
         app = webapp2.WSGIApplication()
@@ -54,5 +56,5 @@ class TestMako(unittest.TestCase):
         self.assertTrue(isinstance(j, mako.Mako))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

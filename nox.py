@@ -18,46 +18,46 @@ from tempfile import gettempdir
 
 
 def session_lint(session):
-    session.install('flake8', 'flake8-import-order')
+    session.install("flake8", "flake8-import-order")
     session.run(
-        'flake8',
-        '--import-order-style=google',
-        'webapp2.py', 'webapp2_extras', 'tests', 'example')
+        "flake8",
+        "--import-order-style=google",
+        "webapp2.py",
+        "webapp2_extras",
+        "tests",
+        "example",
+    )
 
 
 def run_tests(session, requirements, gae=False):
-    session.install('-r', requirements)
-    session.install('-e', '.')
+    session.install("-r", requirements)
+    session.install("-e", ".")
 
     if gae:
         tmpdir = gettempdir()
-        session.run('gcp-devrel-py-tools', 'download-appengine-sdk', tmpdir)
-        session.env['GAE_SDK_PATH'] = os.path.join(tmpdir, 'google_appengine')
+        session.run("gcp-devrel-py-tools", "download-appengine-sdk", tmpdir)
+        session.env["GAE_SDK_PATH"] = os.path.join(tmpdir, "google_appengine")
 
-    session.run(
-        'py.test',
-        '--cov=webapp2',
-        '--cov=webapp2_extras',
-        *session.posargs)
+    session.run("py.test", "--cov=webapp2", "--cov=webapp2_extras", *session.posargs)
 
 
-@nox.parametrize('interpreter', ['python2.7', 'python3.4', 'python3.5'])
+@nox.parametrize("interpreter", ["python2.7", "python3.4", "python3.5"])
 def session_tests(session, interpreter):
     session.interpreter = interpreter
-    run_tests(session, 'requirements-dev.txt')
+    run_tests(session, "requirements-dev.txt")
 
 
 def session_tests_gaesdk(session):
     """Runs tests using GAE sdk versions of libraries and inside of the GAE
     test environment."""
-    session.interpreter = 'python2.7'
-    run_tests(session, 'requirements-dev-gaesdk.txt', gae=True)
+    session.interpreter = "python2.7"
+    run_tests(session, "requirements-dev-gaesdk.txt", gae=True)
 
 
 def session_docs(session):
-    session.interpreter = 'python2.7'
-    session.install('-r', 'requirements-dev.txt')
-    session.install('sphinx')
-    session.install('-e', '.')
-    session.chdir('docs')
-    session.run('make', 'html')
+    session.interpreter = "python2.7"
+    session.install("-r", "requirements-dev.txt")
+    session.install("sphinx")
+    session.install("-e", ".")
+    session.chdir("docs")
+    session.run("make", "html")

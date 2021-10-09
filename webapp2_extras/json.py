@@ -42,7 +42,7 @@ def encode(value, *args, **kwargs):
         The serialized value.
     """
     # By default encode using a compact format.
-    kwargs.setdefault('separators', (',', ':'))
+    kwargs.setdefault("separators", (",", ":"))
     # JSON permits but does not require forward slashes to be escaped.
     # This is useful when json data is emitted in a <script> tag
     # in HTML, as it prevents </script> tags from prematurely terminating
@@ -74,7 +74,7 @@ def b64encode(value, *args, **kwargs):
 
     Parameters and return value are the same from :func:`encode`.
     """
-    return base64.b64encode(encode(value, *args, **kwargs).encode('ascii'))
+    return base64.b64encode(encode(value, *args, **kwargs).encode("ascii"))
 
 
 def b64decode(value, *args, **kwargs):

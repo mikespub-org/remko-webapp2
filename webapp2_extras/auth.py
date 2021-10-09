@@ -59,13 +59,13 @@ from webapp2_extras import sessions
 #      The user object must provide all of them as attributes.
 #:     Default is an empty list.
 default_config = {
-    'user_model':      'webapp2_extras.appengine.auth.models.User',
-    'session_backend': 'securecookie',
-    'cookie_name':     'auth',
-    'token_max_age':   86400 * 7 * 3,
-    'token_new_age':   86400,
-    'token_cache_age': 3600,
-    'user_attributes': [],
+    "user_model": "webapp2_extras.appengine.auth.models.User",
+    "session_backend": "securecookie",
+    "cookie_name": "auth",
+    "token_max_age": 86400 * 7 * 3,
+    "token_new_age": 86400,
+    "token_cache_age": 3600,
+    "user_attributes": [],
 }
 
 #: Internal flag for anonymous users.
@@ -91,8 +91,7 @@ class AuthStore:
     config_key = __name__
 
     #: Required attributes stored in a session.
-    _session_attributes = ['user_id', 'remember',
-                           'token', 'token_ts', 'cache_ts']
+    _session_attributes = ["user_id", "remember", "token", "token_ts", "cache_ts"]
 
     def __init__(self, app, config=None):
         """Initializes the session store.
@@ -106,9 +105,7 @@ class AuthStore:
         self.app = app
         # Base configuration.
         self.config = app.config.load_config(
-            self.config_key,
-            default_values=default_config,
-            user_values=config
+            self.config_key, default_values=default_config, user_values=config
         )
 
     # User data we're interested in -------------------------------------------
@@ -130,7 +127,7 @@ class AuthStore:
         This must be an ordered list of unique elements.
         """
         seen = set()
-        attrs = self.config['user_attributes']
+        attrs = self.config["user_attributes"]
         return [a for a in attrs if a not in seen and not seen.add(a)]
 
     # User model related ------------------------------------------------------
@@ -138,9 +135,9 @@ class AuthStore:
     @webapp2.cached_property
     def user_model(self):
         """Configured user model."""
-        cls = self.config['user_model']
+        cls = self.config["user_model"]
         if isinstance(cls, str):
-            cls = self.config['user_model'] = webapp2.import_string(cls)
+            cls = self.config["user_model"] = webapp2.import_string(cls)
 
         return cls
 
@@ -217,7 +214,7 @@ class AuthStore:
             return None
 
         user_dict = {a: getattr(user, a) for a in self.user_attributes}
-        user_dict['user_id'] = user.get_id()
+        user_dict["user_id"] = user.get_id()
         return user_dict
 
     # Session related ---------------------------------------------------------
@@ -231,8 +228,9 @@ class AuthStore:
             A session dict.
         """
         store = sessions.get_store(request=request)
-        return store.get_session(self.config['cookie_name'],
-                                 backend=self.config['session_backend'])
+        return store.get_session(
+            self.config["cookie_name"], backend=self.config["session_backend"]
+        )
 
     def serialize_session(self, data):
         """Serializes values for a session.
@@ -247,8 +245,9 @@ class AuthStore:
             return [data.get(k) for k in self.session_attributes]
         except AssertionError:
             logging.warning(
-                'Invalid user data: %r. Expected attributes: %r.' %
-                (data, self.session_attributes))
+                "Invalid user data: %r. Expected attributes: %r."
+                % (data, self.session_attributes)
+            )
             return None
 
     def deserialize_session(self, data):
@@ -264,8 +263,9 @@ class AuthStore:
             return dict(zip(self.session_attributes, data))
         except AssertionError:
             logging.warning(
-                'Invalid user data: %r. Expected attributes: %r.' %
-                (data, self.session_attributes))
+                "Invalid user data: %r. Expected attributes: %r."
+                % (data, self.session_attributes)
+            )
             return None
 
     # Validators --------------------------------------------------------------
@@ -305,7 +305,7 @@ class AuthStore:
             A tuple ``(user_dict, token)``.
         """
         now = int(time.time())
-        delete = token_ts and ((now - token_ts) > self.config['token_max_age'])
+        delete = token_ts and ((now - token_ts) > self.config["token_max_age"])
         create = False
 
         if not delete:
@@ -313,8 +313,8 @@ class AuthStore:
             user, ts = self.get_user_by_auth_token(user_id, token)
             if user:
                 # Now validate the real timestamp.
-                delete = (now - ts) > self.config['token_max_age']
-                create = (now - ts) > self.config['token_new_age']
+                delete = (now - ts) > self.config["token_max_age"]
+                create = (now - ts) > self.config["token_new_age"]
 
         if delete or create or not user:
             if delete or create:
@@ -339,11 +339,11 @@ class AuthStore:
             True if it is valid, False otherwise.
         """
         now = int(time.time())
-        valid = (now - cache_ts) < self.config['token_cache_age']
+        valid = (now - cache_ts) < self.config["token_cache_age"]
 
         if valid and token_ts:
-            valid2 = (now - token_ts) < self.config['token_max_age']
-            valid3 = (now - token_ts) < self.config['token_new_age']
+            valid2 = (now - token_ts) < self.config["token_max_age"]
+            valid3 = (now - token_ts) < self.config["token_new_age"]
             valid = valid2 and valid3
 
         return valid
@@ -387,15 +387,27 @@ class Auth:
                 self._user = _anon
             else:
                 self._user = self.get_user_by_token(
-                    user_id=data['user_id'], token=data['token'],
-                    token_ts=data['token_ts'], cache=data,
-                    cache_ts=data['cache_ts'], remember=data['remember'],
-                    save_session=save_session)
+                    user_id=data["user_id"],
+                    token=data["token"],
+                    token_ts=data["token_ts"],
+                    cache=data,
+                    cache_ts=data["cache_ts"],
+                    remember=data["remember"],
+                    save_session=save_session,
+                )
 
         return self._user_or_none()
 
-    def get_user_by_token(self, user_id, token, token_ts=None, cache=None,
-                          cache_ts=None, remember=False, save_session=True):
+    def get_user_by_token(
+        self,
+        user_id,
+        token,
+        token_ts=None,
+        cache=None,
+        cache_ts=None,
+        remember=False,
+        save_session=True,
+    ):
         """Returns a user based on an authentication token.
 
         :param user_id:
@@ -416,9 +428,11 @@ class Auth:
             A user dict or None.
         """
         if self._user is not None:
-            assert (self._user is not _anon and
-                    self._user['user_id'] == user_id and
-                    self._user['token'] == token)
+            assert (
+                self._user is not _anon
+                and self._user["user_id"] == user_id
+                and self._user["token"] == token
+            )
             return self._user_or_none()
 
         if cache and cache_ts:
@@ -430,8 +444,9 @@ class Auth:
 
         if self._user is None:
             # Fetch and validate the token.
-            self._user, token = self.store.validate_token(user_id, token,
-                                                          token_ts=token_ts)
+            self._user, token = self.store.validate_token(
+                user_id, token, token_ts=token_ts
+            )
 
         if self._user is None:
             self._user = _anon
@@ -439,13 +454,19 @@ class Auth:
             if not token:
                 token_ts = None
 
-            self.set_session(self._user, token=token, token_ts=token_ts,
-                             cache_ts=cache_ts, remember=remember)
+            self.set_session(
+                self._user,
+                token=token,
+                token_ts=token_ts,
+                cache_ts=cache_ts,
+                remember=remember,
+            )
 
         return self._user_or_none()
 
-    def get_user_by_password(self, auth_id, password, remember=False,
-                             save_session=True, silent=False):
+    def get_user_by_password(
+        self, auth_id, password, remember=False, save_session=True, silent=False
+    ):
         """Returns a user based on password credentials.
 
         :param auth_id:
@@ -467,8 +488,7 @@ class Auth:
             # During a login attempt, invalidate current session.
             self.unset_session()
 
-        self._user = self.store.validate_password(auth_id, password,
-                                                  silent=silent)
+        self._user = self.store.validate_password(auth_id, password, silent=silent)
         if not self._user:
             self._user = _anon
         elif save_session:
@@ -484,8 +504,15 @@ class Auth:
         """Auth session."""
         return self.store.get_session(self.request)
 
-    def set_session(self, user, token=None, token_ts=None, cache_ts=None,
-                    remember=False, **session_args):
+    def set_session(
+        self,
+        user,
+        token=None,
+        token_ts=None,
+        cache_ts=None,
+        remember=False,
+        **session_args
+    ):
         """Saves a user in the session.
 
         :param user:
@@ -502,25 +529,27 @@ class Auth:
             Keyword arguments to set the session arguments.
         """
         now = int(time.time())
-        token = token or self.store.create_auth_token(user['user_id'])
+        token = token or self.store.create_auth_token(user["user_id"])
         token_ts = token_ts or now
         cache_ts = cache_ts or now
         if remember:
-            max_age = self.store.config['token_max_age']
+            max_age = self.store.config["token_max_age"]
         else:
             max_age = None
 
-        session_args.setdefault('max_age', max_age)
+        session_args.setdefault("max_age", max_age)
         # Create a new dict or just update user?
         # We are doing the latter, and so the user dict will always have
         # the session metadata (token, timestamps etc). This is easier to test.
         # But we could store only user_id and custom user attributes instead.
-        user.update({
-            'token':    token,
-            'token_ts': token_ts,
-            'cache_ts': cache_ts,
-            'remember': int(remember),
-        })
+        user.update(
+            {
+                "token": token,
+                "token_ts": token_ts,
+                "cache_ts": cache_ts,
+                "remember": int(remember),
+            }
+        )
         self.set_session_data(user, **session_args)
         self._user = user
 
@@ -530,7 +559,7 @@ class Auth:
         data = self.get_session_data(pop=True)
         if data:
             # Invalidate current token.
-            self.store.delete_auth_token(data['user_id'], data['token'])
+            self.store.delete_auth_token(data["user_id"], data["token"])
 
     def get_session_data(self, pop=False):
         """Returns the session data as a dictionary.
@@ -541,13 +570,13 @@ class Auth:
             A deserialized session, or None.
         """
         func = self.session.pop if pop else self.session.get
-        rv = func('_user', None)
+        rv = func("_user", None)
         if rv is not None:
             data = self.store.deserialize_session(rv)
             if data:
                 return data
             elif not pop:
-                self.session.pop('_user', None)
+                self.session.pop("_user", None)
 
         return None
 
@@ -561,7 +590,7 @@ class Auth:
         """
         data = self.store.serialize_session(data)
         if data is not None:
-            self.session['_user'] = data
+            self.session["_user"] = data
             self.session.container.session_args.update(session_args)
 
 
@@ -569,9 +598,9 @@ class Auth:
 
 
 #: Key used to store :class:`AuthStore` in the app registry.
-_store_registry_key = 'webapp2_extras.auth.Auth'
+_store_registry_key = "webapp2_extras.auth.Auth"
 #: Key used to store :class:`Auth` in the request registry.
-_auth_registry_key = 'webapp2_extras.auth.Auth'
+_auth_registry_key = "webapp2_extras.auth.Auth"
 
 
 def get_store(factory=AuthStore, key=_store_registry_key, app=None):

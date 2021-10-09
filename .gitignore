@@ -1,5 +1,7 @@
 *.py[co]
+build
 dist
+venv
 
 # When this repository is included as a 
 # submodule within a buildout project,

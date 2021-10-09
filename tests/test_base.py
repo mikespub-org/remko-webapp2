@@ -18,7 +18,6 @@ import webapp2
 
 
 class BaseTestCase(unittest.TestCase):
-
     def tearDown(self):
         # Clear thread-local variables.
         self.clear_globals()

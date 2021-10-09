@@ -20,10 +20,11 @@ import webapp2
 
 
 def _norm_req(s):
-    return '\r\n'.join(s.strip().replace('\r', '').split('\n'))
+    return "\r\n".join(s.strip().replace("\r", "").split("\n"))
 
 
-_test_req = """
+_test_req = (
+    """
 POST /webob/ HTTP/1.0
 Accept: */*
 Cache-Control: max-age=0
@@ -42,7 +43,9 @@ Content-type: application/octet-stream
 these are the contents of the file 'bar.txt'
 
 ------------------------------deb95b63e42a--
-""" % '----------------------------deb95b63e42a'
+"""
+    % "----------------------------deb95b63e42a"
+)
 
 _test_req2 = """
 POST / HTTP/1.0
@@ -51,68 +54,76 @@ Content-Length: 0
 """
 
 _test_req = _norm_req(_test_req)
-_test_req2 = _norm_req(_test_req2) + '\r\n'
+_test_req2 = _norm_req(_test_req2) + "\r\n"
 
 
 class TestRequest(BaseTestCase):
     def test_charset(self):
-        req = webapp2.Request.blank('/', environ={
-            'CONTENT_TYPE': 'text/html; charset=ISO-8859-4',
-        })
-        self.assertEqual(req.content_type, 'text/html')
-        self.assertEqual(req.charset.lower(), 'iso-8859-4')
+        req = webapp2.Request.blank(
+            "/",
+            environ={
+                "CONTENT_TYPE": "text/html; charset=ISO-8859-4",
+            },
+        )
+        self.assertEqual(req.content_type, "text/html")
+        self.assertEqual(req.charset.lower(), "iso-8859-4")
 
-        req = webapp2.Request.blank('/', environ={
-            'CONTENT_TYPE': 'application/json; charset="ISO-8859-1"',
-        })
+        req = webapp2.Request.blank(
+            "/",
+            environ={
+                "CONTENT_TYPE": 'application/json; charset="ISO-8859-1"',
+            },
+        )
 
-        self.assertEqual(req.content_type, 'application/json')
-        self.assertEqual(req.charset.lower(), 'iso-8859-1')
+        self.assertEqual(req.content_type, "application/json")
+        self.assertEqual(req.charset.lower(), "iso-8859-1")
 
-        req = webapp2.Request.blank('/', environ={
-            'CONTENT_TYPE': 'application/json',
-        })
-        self.assertEqual(req.content_type, 'application/json')
-        self.assertEqual(req.charset.lower(), 'utf-8')
+        req = webapp2.Request.blank(
+            "/",
+            environ={
+                "CONTENT_TYPE": "application/json",
+            },
+        )
+        self.assertEqual(req.content_type, "application/json")
+        self.assertEqual(req.charset.lower(), "utf-8")
 
-        match = webapp2._charset_re.search('text/html')
+        match = webapp2._charset_re.search("text/html")
         if match:
             charset = match.group(1).lower().strip().strip('"').strip()
         else:
-            charset = 'utf-8'
-        self.assertEqual(charset, 'utf-8')
+            charset = "utf-8"
+        self.assertEqual(charset, "utf-8")
 
-        match = webapp2._charset_re.search('text/html; charset=ISO-8859-4')
+        match = webapp2._charset_re.search("text/html; charset=ISO-8859-4")
         if match:
             charset = match.group(1).lower().strip().strip('"').strip()
         else:
-            charset = 'utf-8'
-        self.assertEqual(charset, 'iso-8859-4')
+            charset = "utf-8"
+        self.assertEqual(charset, "iso-8859-4")
 
         match = webapp2._charset_re.search('text/html; charset="ISO-8859-4"')
         if match:
             charset = match.group(1).lower().strip().strip('"').strip()
         else:
-            charset = 'utf-8'
-        self.assertEqual(charset, 'iso-8859-4')
+            charset = "utf-8"
+        self.assertEqual(charset, "iso-8859-4")
 
-        match = webapp2._charset_re.search(
-            'text/html; charset=  "  ISO-8859-4  "  ')
+        match = webapp2._charset_re.search('text/html; charset=  "  ISO-8859-4  "  ')
         if match:
             charset = match.group(1).lower().strip().strip('"').strip()
         else:
-            charset = 'utf-8'
-        self.assertEqual(charset, 'iso-8859-4')
+            charset = "utf-8"
+        self.assertEqual(charset, "iso-8859-4")
 
     def test_unicode(self):
-        req = webapp2.Request.blank('/?1=2', POST='3=4')
+        req = webapp2.Request.blank("/?1=2", POST="3=4")
 
-        res = req.GET.get('1')
-        self.assertEqual(res, '2')
+        res = req.GET.get("1")
+        self.assertEqual(res, "2")
         self.assertTrue(isinstance(res, str))
 
-        res = req.POST.get('3')
-        self.assertEqual(res, '4')
+        res = req.POST.get("3")
+        self.assertEqual(res, "4")
         self.assertTrue(isinstance(res, str))
 
     def test_cookie_unicode(self):
@@ -122,187 +133,187 @@ class TestRequest(BaseTestCase):
 
         # With base64 ---------------------------------------------------------
 
-        value = webapp2._to_basestring(base64.b64encode('á'.encode()))
+        value = webapp2._to_basestring(base64.b64encode("á".encode()))
         rsp = webapp2.Response()
-        rsp.set_cookie('foo', value)
+        rsp.set_cookie("foo", value)
 
-        cookie = rsp.headers.get('Set-Cookie')
-        req = webapp2.Request.blank('/', headers=[('Cookie', cookie)])
+        cookie = rsp.headers.get("Set-Cookie")
+        req = webapp2.Request.blank("/", headers=[("Cookie", cookie)])
 
-        self.assertEqual(req.cookies.get('foo'), value)
+        self.assertEqual(req.cookies.get("foo"), value)
 
-        self.assertEqual(
-            base64.b64decode(req.cookies.get('foo')).decode('utf-8'),
-            'á'
-        )
+        self.assertEqual(base64.b64decode(req.cookies.get("foo")).decode("utf-8"), "á")
 
         # Without quote -------------------------------------------------------
 
-        value = 'föö=bär; föo, bär, bäz=dïng;'
+        value = "föö=bär; föo, bär, bäz=dïng;"
         rsp = webapp2.Response()
-        rsp.set_cookie('foo', value)
+        rsp.set_cookie("foo", value)
 
-        cookie = rsp.headers.get('Set-Cookie')
-        req = webapp2.Request.blank('/', headers=[('Cookie', cookie)])
+        cookie = rsp.headers.get("Set-Cookie")
+        req = webapp2.Request.blank("/", headers=[("Cookie", cookie)])
 
-        self.assertEqual(req.cookies.get('foo'), value)
+        self.assertEqual(req.cookies.get("foo"), value)
 
         # With quote, hard way ------------------------------------------------
 
         # Here is our test value.
-        x = 'föö'
+        x = "föö"
         # We must store cookies quoted. To quote unicode, we need to encode it.
-        y = quote(x.encode('utf8'))
+        y = quote(x.encode("utf8"))
         # The encoded, quoted string looks ugly.
-        self.assertEqual(y, 'f%C3%B6%C3%B6')
+        self.assertEqual(y, "f%C3%B6%C3%B6")
         # But it is easy to get it back to our initial value.
         z = unquote(y)
         if not six.PY3:
-            z = z.decode('utf8')
+            z = z.decode("utf8")
 
         # And it is indeed the same value.
         self.assertEqual(z, x)
 
         # Set a cookie using the encoded/quoted value.
         rsp = webapp2.Response()
-        rsp.set_cookie('foo', y)
-        cookie = rsp.headers.get('Set-Cookie')
-        self.assertEqual(cookie, 'foo=f%C3%B6%C3%B6; Path=/')
+        rsp.set_cookie("foo", y)
+        cookie = rsp.headers.get("Set-Cookie")
+        self.assertEqual(cookie, "foo=f%C3%B6%C3%B6; Path=/")
 
         # Get the cookie back.
-        req = webapp2.Request.blank('/', headers=[('Cookie', cookie)])
-        self.assertEqual(req.cookies.get('foo'), y)
+        req = webapp2.Request.blank("/", headers=[("Cookie", cookie)])
+        self.assertEqual(req.cookies.get("foo"), y)
         # Here is our original value, again. Problem: the value is decoded
         # before we had a chance to unquote it.
 
         # w = unquote(req.cookies.get('foo').encode('utf8')).decode('utf8')
-        w = unquote(req.cookies.get('foo'))
+        w = unquote(req.cookies.get("foo"))
         # And it is indeed the same value.
         self.assertEqual(w, x)
 
         # With quote, easy way ------------------------------------------------
 
-        value = 'föö=bär; föo, bär, bäz=dïng;'
-        quoted_value = quote(value.encode('utf8'))
+        value = "föö=bär; föo, bär, bäz=dïng;"
+        quoted_value = quote(value.encode("utf8"))
         rsp = webapp2.Response()
-        rsp.set_cookie('foo', quoted_value)
+        rsp.set_cookie("foo", quoted_value)
 
-        cookie = rsp.headers.get('Set-Cookie')
-        req = webapp2.Request.blank('/', headers=[('Cookie', cookie)])
+        cookie = rsp.headers.get("Set-Cookie")
+        req = webapp2.Request.blank("/", headers=[("Cookie", cookie)])
 
-        cookie_value = req.cookies.get('foo')
+        cookie_value = req.cookies.get("foo")
 
         unquoted_cookie_value = unquote(cookie_value)
         self.assertEqual(cookie_value, quoted_value)
         self.assertEqual(unquoted_cookie_value, value)
 
     def test_get(self):
-        req = webapp2.Request.blank('/?1=2&1=3&3=4', POST='5=6&7=8')
+        req = webapp2.Request.blank("/?1=2&1=3&3=4", POST="5=6&7=8")
 
-        res = req.get('1')
-        self.assertEqual(res, '2')
+        res = req.get("1")
+        self.assertEqual(res, "2")
 
-        res = req.get_all('1')
-        self.assertEqual(res, ['2', '3'])
+        res = req.get_all("1")
+        self.assertEqual(res, ["2", "3"])
 
-        res = req.get('8')
-        self.assertEqual(res, '')
+        res = req.get("8")
+        self.assertEqual(res, "")
 
-        res = req.get_all('8')
+        res = req.get_all("8")
         self.assertEqual(res, [])
 
-        res = req.get('8', default_value='9')
-        self.assertEqual(res, '9')
+        res = req.get("8", default_value="9")
+        self.assertEqual(res, "9")
 
     def test_get_with_POST(self):
-        req = webapp2.Request.blank('/?1=2&1=3&3=4', POST={5: 6, 7: 8})
+        req = webapp2.Request.blank("/?1=2&1=3&3=4", POST={5: 6, 7: 8})
 
-        res = req.get('1')
-        self.assertEqual(res, '2')
+        res = req.get("1")
+        self.assertEqual(res, "2")
 
-        res = req.get_all('1')
-        self.assertEqual(res, ['2', '3'])
+        res = req.get_all("1")
+        self.assertEqual(res, ["2", "3"])
 
-        res = req.get('8')
-        self.assertEqual(res, '')
+        res = req.get("8")
+        self.assertEqual(res, "")
 
-        res = req.get_all('8')
+        res = req.get_all("8")
         self.assertEqual(res, [])
 
-        res = req.get('8', default_value='9')
-        self.assertEqual(res, '9')
+        res = req.get("8", default_value="9")
+        self.assertEqual(res, "9")
 
     def test_getitem(self):
-        req = webapp2.Request.blank('/?1=2&1=3&3=4', POST='5=6&7=8')
+        req = webapp2.Request.blank("/?1=2&1=3&3=4", POST="5=6&7=8")
 
-        res = req['1']
-        self.assertEqual(res, '2')
+        res = req["1"]
+        self.assertEqual(res, "2")
 
-        res = req['8']
-        self.assertEqual(res, '')
+        res = req["8"]
+        self.assertEqual(res, "")
 
     def test_getitem_with_POST(self):
-        req = webapp2.Request.blank('/?1=2&1=3&3=4', POST={5: 6, 7: 8})
+        req = webapp2.Request.blank("/?1=2&1=3&3=4", POST={5: 6, 7: 8})
 
-        res = req['1']
-        self.assertEqual(res, '2')
+        res = req["1"]
+        self.assertEqual(res, "2")
 
-        res = req['8']
-        self.assertEqual(res, '')
+        res = req["8"]
+        self.assertEqual(res, "")
 
     def test_getitem_with_square_brackets(self):
-        req = webapp2.Request.blank('/endpoint?x[1]=3&a=1&a=2&b=0')
+        req = webapp2.Request.blank("/endpoint?x[1]=3&a=1&a=2&b=0")
 
-        res = req['x']
-        self.assertEqual(res, '')
+        res = req["x"]
+        self.assertEqual(res, "")
 
-        res = req['x[1]']
-        self.assertEqual(res, '3')
+        res = req["x[1]"]
+        self.assertEqual(res, "3")
 
     def test_setitem(self):
-        req = webapp2.Request.blank('/?1=2&1=3&3=4', POST='5=6&7=8')
+        req = webapp2.Request.blank("/?1=2&1=3&3=4", POST="5=6&7=8")
 
         # Existing key
         with self.assertRaises(TypeError):
-            req['1'] = '7'
+            req["1"] = "7"
 
         # New key
         with self.assertRaises(TypeError):
-            req['8'] = '7'
+            req["8"] = "7"
 
     def test_arguments(self):
-        req = webapp2.Request.blank('/?1=2&3=4', POST='5=6&7=8')
+        req = webapp2.Request.blank("/?1=2&3=4", POST="5=6&7=8")
 
         res = req.arguments()
-        self.assertEqual(res, ['1', '3', '5', '7'])
+        self.assertEqual(res, ["1", "3", "5", "7"])
 
     def test_get_range(self):
-        req = webapp2.Request.blank('/')
-        res = req.get_range('1', min_value=None, max_value=None, default=None)
+        req = webapp2.Request.blank("/")
+        res = req.get_range("1", min_value=None, max_value=None, default=None)
         self.assertEqual(res, None)
 
-        req = webapp2.Request.blank('/?1=2')
-        res = req.get_range('1', min_value=None, max_value=None, default=0)
+        req = webapp2.Request.blank("/?1=2")
+        res = req.get_range("1", min_value=None, max_value=None, default=0)
         self.assertEqual(res, 2)
 
-        req = webapp2.Request.blank('/?1=foo')
-        res = req.get_range('1', min_value=1, max_value=99, default=100)
+        req = webapp2.Request.blank("/?1=foo")
+        res = req.get_range("1", min_value=1, max_value=99, default=100)
         self.assertEqual(res, 99)
 
-        req = webapp2.Request.blank('/?a=4')
-        res = req.get_range('a', min_value=10, max_value=20, default=100)
+        req = webapp2.Request.blank("/?a=4")
+        res = req.get_range("a", min_value=10, max_value=20, default=100)
         self.assertEqual(res, 10)
 
     def test_issue_3426(self):
         """When the content-type is 'application/x-www-form-urlencoded' and
         POST data is empty the content-type is dropped by Google appengine.
         """
-        req = webapp2.Request.blank('/', environ={
-            'REQUEST_METHOD': 'GET',
-            'CONTENT_TYPE': 'application/x-www-form-urlencoded',
-        })
-        self.assertEqual(req.method, 'GET')
-        self.assertEqual(req.content_type, 'application/x-www-form-urlencoded')
+        req = webapp2.Request.blank(
+            "/",
+            environ={
+                "REQUEST_METHOD": "GET",
+                "CONTENT_TYPE": "application/x-www-form-urlencoded",
+            },
+        )
+        self.assertEqual(req.method, "GET")
+        self.assertEqual(req.content_type, "application/x-www-form-urlencoded")
 
     # XXX: These tests fail when request charset is set to utf-8 by default.
     # Otherwise they pass.
@@ -368,5 +379,5 @@ class TestRequest(BaseTestCase):
     '''
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

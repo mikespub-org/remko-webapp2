@@ -26,14 +26,14 @@ import six
 import webapp2
 
 
-lookup = importlib.import_module('mako.lookup')
+lookup = importlib.import_module("mako.lookup")
 
 #: Default configuration values for this module. Keys are:
 #:
 #: template_path
 #:     Directory for templates. Default is `templates`.
 default_config = {
-    'template_path': 'templates',
+    "template_path": "templates",
 }
 
 
@@ -77,16 +77,16 @@ class Mako:
             self.config_key,
             default_values=default_config,
             user_values=config,
-            required_keys=None
+            required_keys=None,
         )
 
-        directories = config.get('template_path')
+        directories = config.get("template_path")
         if isinstance(directories, str):
             directories = [directories]
 
-        self.environment = lookup.TemplateLookup(directories=directories,
-                                                 output_encoding='utf-8',
-                                                 encoding_errors='replace')
+        self.environment = lookup.TemplateLookup(
+            directories=directories, output_encoding="utf-8", encoding_errors="replace"
+        )
 
     def render_template(self, _filename, **context):
         """Renders a template and returns a response object.
@@ -107,7 +107,7 @@ class Mako:
 
 
 #: Key used to store :class:`Mako` in the app registry.
-_registry_key = 'webapp2_extras.mako.Mako'
+_registry_key = "webapp2_extras.mako.Mako"
 
 
 def get_mako(factory=Mako, key=_registry_key, app=None):

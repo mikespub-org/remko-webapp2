@@ -31,7 +31,7 @@ import webapp2
 
 _rng = random.SystemRandom()
 
-HEXADECIMAL_DIGITS = string.digits + 'abcdef'
+HEXADECIMAL_DIGITS = string.digits + "abcdef"
 DIGITS = string.digits
 LOWERCASE_ALPHA = string.ascii_lowercase
 UPPERCASE_ALPHA = string.ascii_uppercase
@@ -93,22 +93,22 @@ def generate_random_string(length=0, entropy=0, pool=ALPHANUMERIC):
     pool = list(set(pool))
 
     if length and entropy:
-        raise ValueError('Use length or entropy, not both.')
+        raise ValueError("Use length or entropy, not both.")
 
     if (length and entropy) is None:
-        raise ValueError('Use digit value for length and entropy, not None.')
+        raise ValueError("Use digit value for length and entropy, not None.")
 
     if length <= 0 and entropy <= 0:
-        raise ValueError('Length or entropy must be greater than 0.')
+        raise ValueError("Length or entropy must be greater than 0.")
 
     if entropy:
         log_of_2 = 0.6931471805599453
         length = long(math.ceil((log_of_2 / math.log(len(pool))) * entropy))
 
-    return ''.join(_rng.choice(pool) for _ in range(length))
+    return "".join(_rng.choice(pool) for _ in range(length))
 
 
-def generate_password_hash(password, method='sha1', length=22, pepper=None):
+def generate_password_hash(password, method="sha1", length=22, pepper=None):
     """Hashes a password.
 
     The format of the string returned includes the method that was used
@@ -133,12 +133,12 @@ def generate_password_hash(password, method='sha1', length=22, pepper=None):
 
     This function was ported and adapted from `Werkzeug`_.
     """
-    salt = method != 'plain' and generate_random_string(length) or ''
+    salt = method != "plain" and generate_random_string(length) or ""
     hashval = hash_password(password, method, salt, pepper)
     if hashval is None:
-        raise TypeError('Invalid method %r.' % method)
+        raise TypeError("Invalid method %r." % method)
 
-    return '{}${}${}'.format(hashval, method, salt)
+    return f"{hashval}${method}${salt}"
 
 
 def check_password_hash(password, pwhash, pepper=None):
@@ -158,10 +158,10 @@ def check_password_hash(password, pwhash, pepper=None):
 
     This function was ported and adapted from `Werkzeug`_.
     """
-    if pwhash.count('$') < 2:
+    if pwhash.count("$") < 2:
         return False
 
-    hashval, method, salt = pwhash.split('$', 2)
+    hashval, method, salt = pwhash.split("$", 2)
     return hash_password(password, method, salt, pepper) == hashval
 
 
@@ -184,7 +184,7 @@ def hash_password(password, method, salt=None, pepper=None):
 
     This function was ported and adapted from `Werkzeug`_.
     """
-    if method == 'plain':
+    if method == "plain":
         return password
 
     password = webapp2._to_utf8(password)
@@ -199,8 +199,7 @@ def hash_password(password, method, salt=None, pepper=None):
         h = method(password)
 
     if pepper:
-        h = hmac.new(
-            webapp2._to_utf8(pepper), webapp2._to_utf8(h.hexdigest()), method)
+        h = hmac.new(webapp2._to_utf8(pepper), webapp2._to_utf8(h.hexdigest()), method)
 
     return h.hexdigest()
 
@@ -222,9 +221,7 @@ def compare_hashes(a, b):
         return False
 
     result = 0
-    for x, y in zip(
-            webapp2._to_basestring(a),
-            webapp2._to_basestring(b)):
+    for x, y in zip(webapp2._to_basestring(a), webapp2._to_basestring(b)):
         result |= ord(x) ^ ord(y)
 
     return result == 0

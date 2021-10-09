@@ -1,3 +1,3 @@
 default_config = {
-    'templates_dir': 'templates',
+    "templates_dir": "templates",
 }

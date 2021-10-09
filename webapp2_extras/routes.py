@@ -105,18 +105,21 @@ class DomainRoute(MultiRoute):
     def match(self, request):
         # Use SERVER_NAME to ignore port number that comes with request.host?
         # host_match = self.regex.match(request.host.split(':', 1)[0])
-        host_match = self.regex.match(request.environ['SERVER_NAME'])
+        host_match = self.regex.match(request.environ["SERVER_NAME"])
 
         if host_match:
             args, kwargs = webapp2._get_route_variables(host_match)
-            return _match_routes(self.get_match_children, request, None,
-                                 kwargs)
+            return _match_routes(self.get_match_children, request, None, kwargs)
 
     @webapp2.cached_property
     def regex(self):
-        regex, reverse_template, args_count, kwargs_count, variables = \
-            webapp2._parse_route_template(self.template,
-                                          default_sufix=r'[^\.]+')
+        (
+            regex,
+            reverse_template,
+            args_count,
+            kwargs_count,
+            variables,
+        ) = webapp2._parse_route_template(self.template, default_sufix=r"[^\.]+")
         return regex
 
 
@@ -145,7 +148,7 @@ class NamePrefixRoute(MultiRoute):
         ])
     """
 
-    _attr = 'name'
+    _attr = "name"
 
     def __init__(self, prefix, routes):
         """Initializes a URL route.
@@ -165,7 +168,7 @@ class NamePrefixRoute(MultiRoute):
 class HandlerPrefixRoute(NamePrefixRoute):
     """Same as :class:`NamePrefixRoute`, but prefixes the route handler."""
 
-    _attr = 'handler'
+    _attr = "handler"
 
 
 class PathPrefixRoute(NamePrefixRoute):
@@ -196,7 +199,7 @@ class PathPrefixRoute(NamePrefixRoute):
     will only be tested if the path prefix matches.
     """
 
-    _attr = 'template'
+    _attr = "template"
 
     def __init__(self, prefix, routes):
         """Initializes a URL route.
@@ -207,8 +210,9 @@ class PathPrefixRoute(NamePrefixRoute):
         :param routes:
             A list of :class:`webapp2.Route` instances.
         """
-        assert prefix.startswith('/') and not prefix.endswith('/'), \
-            'Path prefixes must start with a slash but not end with a slash.'
+        assert prefix.startswith("/") and not prefix.endswith(
+            "/"
+        ), "Path prefixes must start with a slash but not end with a slash."
         super().__init__(prefix, routes)
 
     def get_match_routes(self):
@@ -223,8 +227,13 @@ class PathPrefixRoute(NamePrefixRoute):
 
     @webapp2.cached_property
     def regex(self):
-        regex, reverse_template, args_count, kwargs_count, variables = \
-            webapp2._parse_route_template(self.prefix + '<:/.*>')
+        (
+            regex,
+            reverse_template,
+            args_count,
+            kwargs_count,
+            variables,
+        ) = webapp2._parse_route_template(self.prefix + "<:/.*>")
         return regex
 
 
@@ -235,10 +244,20 @@ class RedirectRoute(webapp2.Route):
     :class:`webapp2.Route`.
     """
 
-    def __init__(self, template, handler=None, name=None, defaults=None,
-                 build_only=False, handler_method=None, methods=None,
-                 schemes=None, redirect_to=None, redirect_to_name=None,
-                 strict_slash=False):
+    def __init__(
+        self,
+        template,
+        handler=None,
+        name=None,
+        defaults=None,
+        build_only=False,
+        handler_method=None,
+        methods=None,
+        schemes=None,
+        redirect_to=None,
+        redirect_to_name=None,
+        strict_slash=False,
+    ):
         """Initializes a URL route. Extra arguments compared to
         :meth:`webapp2.Route.__init__`:
 
@@ -277,12 +296,18 @@ class RedirectRoute(webapp2.Route):
             - Access to ``/bar`` will redirect to ``/bar/``.
         """
         super().__init__(
-            template, handler=handler, name=name, defaults=defaults,
-            build_only=build_only, handler_method=handler_method,
-            methods=methods, schemes=schemes)
+            template,
+            handler=handler,
+            name=name,
+            defaults=defaults,
+            build_only=build_only,
+            handler_method=handler_method,
+            methods=methods,
+            schemes=schemes,
+        )
 
         if strict_slash and not name:
-            raise ValueError('Routes with strict_slash must have a name.')
+            raise ValueError("Routes with strict_slash must have a name.")
 
         self.strict_slash = strict_slash
         self.redirect_to_name = redirect_to_name
@@ -290,7 +315,7 @@ class RedirectRoute(webapp2.Route):
         if redirect_to is not None:
             assert redirect_to_name is None
             self.handler = webapp2.RedirectHandler
-            self.defaults['_uri'] = redirect_to
+            self.defaults["_uri"] = redirect_to
 
     def get_match_routes(self):
         """Generator to get all routes that can be matched from a route.
@@ -305,10 +330,10 @@ class RedirectRoute(webapp2.Route):
 
         if not self.build_only:
             if self.strict_slash is True:
-                if self.template.endswith('/'):
+                if self.template.endswith("/"):
                     template = self.template[:-1]
                 else:
-                    template = self.template + '/'
+                    template = self.template + "/"
 
                 yield main_route
                 yield self._get_redirect_route(template=template)
@@ -319,21 +344,22 @@ class RedirectRoute(webapp2.Route):
         template = template or self.template
         name = name or self.name
         defaults = self.defaults.copy()
-        defaults.update({
-            '_uri': self._redirect,
-            '_name': name,
-        })
-        new_route = webapp2.Route(template, webapp2.RedirectHandler,
-                                  defaults=defaults)
+        defaults.update(
+            {
+                "_uri": self._redirect,
+                "_name": name,
+            }
+        )
+        new_route = webapp2.Route(template, webapp2.RedirectHandler, defaults=defaults)
         return new_route
 
     def _redirect(self, handler, *args, **kwargs):
         # Get from request because args is empty if named routes are set?
         # args, kwargs = (handler.request.route_args,
         #                 handler.request.route_kwargs)
-        kwargs.pop('_uri', None)
-        kwargs.pop('_code', None)
-        return handler.uri_for(kwargs.pop('_name'), *args, **kwargs)
+        kwargs.pop("_uri", None)
+        kwargs.pop("_code", None)
+        return handler.uri_for(kwargs.pop("_name"), *args, **kwargs)
 
 
 def _match_routes(iter_func, request, extra_args=None, extra_kwargs=None):

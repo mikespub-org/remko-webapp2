@@ -64,31 +64,31 @@ except ImportError:  # pragma: no cover
 #: date_formats
 #:     Default date formats for datetime, date and time.
 default_config = {
-    'translations_path':   'locale',
-    'domains':             ['messages'],
-    'default_locale':      'en_US',
-    'default_timezone':    'UTC',
-    'locale_selector':     None,
-    'timezone_selector':   None,
-    'date_formats': {
-        'time':            'medium',
-        'date':            'medium',
-        'datetime':        'medium',
-        'time.short':      None,
-        'time.medium':     None,
-        'time.full':       None,
-        'time.long':       None,
-        'time.iso':        "HH':'mm':'ss",
-        'date.short':      None,
-        'date.medium':     None,
-        'date.full':       None,
-        'date.long':       None,
-        'date.iso':        "yyyy'-'MM'-'dd",
-        'datetime.short':  None,
-        'datetime.medium': None,
-        'datetime.full':   None,
-        'datetime.long':   None,
-        'datetime.iso':    "yyyy'-'MM'-'dd'T'HH':'mm':'ssZ",
+    "translations_path": "locale",
+    "domains": ["messages"],
+    "default_locale": "en_US",
+    "default_timezone": "UTC",
+    "locale_selector": None,
+    "timezone_selector": None,
+    "date_formats": {
+        "time": "medium",
+        "date": "medium",
+        "datetime": "medium",
+        "time.short": None,
+        "time.medium": None,
+        "time.full": None,
+        "time.long": None,
+        "time.iso": "HH':'mm':'ss",
+        "date.short": None,
+        "date.medium": None,
+        "date.full": None,
+        "date.long": None,
+        "date.iso": "yyyy'-'MM'-'dd",
+        "datetime.short": None,
+        "datetime.medium": None,
+        "datetime.full": None,
+        "datetime.long": None,
+        "datetime.iso": "yyyy'-'MM'-'dd'T'HH':'mm':'ssZ",
     },
 }
 
@@ -133,16 +133,16 @@ class I18nStore:
             self.config_key,
             default_values=default_config,
             user_values=config,
-            required_keys=None
+            required_keys=None,
         )
         self.translations = {}
-        self.translations_path = config['translations_path']
-        self.domains = config['domains']
-        self.default_locale = config['default_locale']
-        self.default_timezone = config['default_timezone']
-        self.date_formats = config['date_formats']
-        self.set_locale_selector(config['locale_selector'])
-        self.set_timezone_selector(config['timezone_selector'])
+        self.translations_path = config["translations_path"]
+        self.domains = config["domains"]
+        self.default_locale = config["default_locale"]
+        self.default_timezone = config["default_timezone"]
+        self.date_formats = config["date_formats"]
+        self.set_locale_selector(config["locale_selector"])
+        self.set_timezone_selector(config["timezone_selector"])
 
     def set_locale_selector(self, func):
         """Sets the function that defines the locale for a request.
@@ -194,8 +194,9 @@ class I18nStore:
         trans = self.translations.get(locale)
         if not trans:
             locales = (locale, self.default_locale)
-            trans = self.load_translations(self.translations_path, locales,
-                                           self.domains)
+            trans = self.load_translations(
+                self.translations_path, locales, self.domains
+            )
             if not webapp2.get_app().debug:
                 self.translations[locale] = trans
 
@@ -349,8 +350,8 @@ class I18n:
         if format is None:
             format = self.store.date_formats.get(key)
 
-        if format in ('short', 'medium', 'full', 'long', 'iso'):
-            rv = self.store.date_formats.get('{}.{}'.format(key, format))
+        if format in ("short", "medium", "full", "long", "iso"):
+            rv = self.store.date_formats.get(f"{key}.{format}")
             if rv is not None:
                 format = rv
 
@@ -377,7 +378,7 @@ class I18n:
         :returns:
             A formatted date in unicode.
         """
-        format = self._get_format('date', format)
+        format = self._get_format("date", format)
 
         if rebase and isinstance(date, datetime.datetime):
             date = self.to_local_timezone(date)
@@ -405,14 +406,13 @@ class I18n:
         :returns:
             A formatted date and time in unicode.
         """
-        format = self._get_format('datetime', format)
+        format = self._get_format("datetime", format)
 
         kwargs = {}
         if rebase:
-            kwargs['tzinfo'] = self.tzinfo
+            kwargs["tzinfo"] = self.tzinfo
 
-        return dates.format_datetime(datetime, format, locale=self.locale,
-                                     **kwargs)
+        return dates.format_datetime(datetime, format, locale=self.locale, **kwargs)
 
     def format_time(self, time=None, format=None, rebase=True):
         """Returns a time formatted according to the given pattern and
@@ -435,16 +435,17 @@ class I18n:
         :returns:
             A formatted time in unicode.
         """
-        format = self._get_format('time', format)
+        format = self._get_format("time", format)
 
         kwargs = {}
         if rebase:
-            kwargs['tzinfo'] = self.tzinfo
+            kwargs["tzinfo"] = self.tzinfo
 
         return dates.format_time(time, format, locale=self.locale, **kwargs)
 
-    def format_timedelta(self, datetime_or_timedelta, granularity='second',
-                         threshold=.85):
+    def format_timedelta(
+        self, datetime_or_timedelta, granularity="second", threshold=0.85
+    ):
         """Formats the elapsed time from the given date to now or the given
         timedelta. This currently requires an unreleased development version
         of Babel.
@@ -463,12 +464,11 @@ class I18n:
             A string with the elapsed time.
         """
         if isinstance(datetime_or_timedelta, datetime.datetime):
-            datetime_or_timedelta = datetime.datetime.utcnow() - \
-                datetime_or_timedelta
+            datetime_or_timedelta = datetime.datetime.utcnow() - datetime_or_timedelta
 
-        return dates.format_timedelta(datetime_or_timedelta, granularity,
-                                      threshold=threshold,
-                                      locale=self.locale)
+        return dates.format_timedelta(
+            datetime_or_timedelta, granularity, threshold=threshold, locale=self.locale
+        )
 
     def format_number(self, number):
         """Returns the given number formatted for the current locale. Example::
@@ -511,8 +511,7 @@ class I18n:
         :returns:
             The formatted decimal number.
         """
-        return numbers.format_decimal(number, format=format,
-                                      locale=self.locale)
+        return numbers.format_decimal(number, format=format, locale=self.locale)
 
     def format_currency(self, number, currency, format=None):
         """Returns a formatted currency value. Example::
@@ -539,8 +538,9 @@ class I18n:
         :returns:
             The formatted currency value.
         """
-        return numbers.format_currency(number, currency, format=format,
-                                       locale=self.locale)
+        return numbers.format_currency(
+            number, currency, format=format, locale=self.locale
+        )
 
     def format_percent(self, number, format=None):
         """Returns formatted percent value for the current locale. Example::
@@ -564,8 +564,7 @@ class I18n:
         :returns:
             The formatted percent number.
         """
-        return numbers.format_percent(number, format=format,
-                                      locale=self.locale)
+        return numbers.format_percent(number, format=format, locale=self.locale)
 
     def format_scientific(self, number, format=None):
         """Returns value formatted in scientific notation for the current
@@ -586,8 +585,7 @@ class I18n:
         :returns:
             Value formatted in scientific notation.
         """
-        return numbers.format_scientific(number, format=format,
-                                         locale=self.locale)
+        return numbers.format_scientific(number, format=format, locale=self.locale)
 
     def parse_date(self, string):
         """Parses a date from a string.
@@ -754,11 +752,9 @@ def format_time(time=None, format=None, rebase=True):
     return get_i18n().format_time(time, format, rebase)
 
 
-def format_timedelta(
-        datetime_or_timedelta, granularity='second', threshold=.85):
+def format_timedelta(datetime_or_timedelta, granularity="second", threshold=0.85):
     """See :meth:`I18n.format_timedelta`."""
-    return get_i18n().format_timedelta(datetime_or_timedelta,
-                                       granularity, threshold)
+    return get_i18n().format_timedelta(datetime_or_timedelta, granularity, threshold)
 
 
 def format_number(number):
@@ -839,9 +835,9 @@ _lazy = lazy_gettext
 
 
 #: Key used to store :class:`I18nStore` in the app registry.
-_store_registry_key = 'webapp2_extras.i18n.I18nStore'
+_store_registry_key = "webapp2_extras.i18n.I18nStore"
 #: Key used to store :class:`I18n` in the request registry.
-_i18n_registry_key = 'webapp2_extras.i18n.I18n'
+_i18n_registry_key = "webapp2_extras.i18n.I18n"
 
 
 def get_store(factory=I18nStore, key=_store_registry_key, app=None):

@@ -13,8 +13,7 @@ class BonjourResponse(messages.Message):
 class BonjourService(remote.Service):
     @remote.method(BonjourRequest, BonjourResponse)
     def bonjour(self, request):
-        return BonjourResponse(hello='Bonjour, %s!' %
-                               request.my_name)
+        return BonjourResponse(hello="Bonjour, %s!" % request.my_name)
 
 
 class CiaoRequest(messages.Message):
@@ -28,5 +27,4 @@ class CiaoResponse(messages.Message):
 class CiaoService(remote.Service):
     @remote.method(CiaoRequest, CiaoResponse)
     def ciao(self, request):
-        return CiaoResponse(hello='Ciao, %s!' %
-                            request.my_name)
+        return CiaoResponse(hello="Ciao, %s!" % request.my_name)

@@ -53,18 +53,18 @@ _jinja2 = importlib.import_module("jinja2")
 #: filters
 #:     Extra filters for the Jinja2 environment.
 default_config = {
-    'template_path': 'templates',
-    'compiled_path': None,
-    'force_compiled': False,
-    'environment_args': {
-        'autoescape': True,
-        'extensions': [
-            'jinja2.ext.autoescape',
-            'jinja2.ext.with_',
+    "template_path": "templates",
+    "compiled_path": None,
+    "force_compiled": False,
+    "environment_args": {
+        "autoescape": True,
+        "extensions": [
+            "jinja2.ext.autoescape",
+            "jinja2.ext.with_",
         ],
     },
-    'globals': None,
-    'filters': None,
+    "globals": None,
+    "filters": None,
 }
 
 
@@ -116,45 +116,49 @@ class Jinja2:
             self.config_key,
             default_values=default_config,
             user_values=config,
-            required_keys=None
+            required_keys=None,
         )
-        kwargs = config['environment_args'].copy()
-        enable_i18n = 'jinja2.ext.i18n' in kwargs.get('extensions', [])
+        kwargs = config["environment_args"].copy()
+        enable_i18n = "jinja2.ext.i18n" in kwargs.get("extensions", [])
 
-        if 'loader' not in kwargs:
-            template_path = config['template_path']
-            compiled_path = config['compiled_path']
-            use_compiled = not app.debug or config['force_compiled']
+        if "loader" not in kwargs:
+            template_path = config["template_path"]
+            compiled_path = config["compiled_path"]
+            use_compiled = not app.debug or config["force_compiled"]
 
             if compiled_path and use_compiled:
                 # Use precompiled templates loaded from a module or zip.
-                kwargs['loader'] = _jinja2.ModuleLoader(compiled_path)
+                kwargs["loader"] = _jinja2.ModuleLoader(compiled_path)
             else:
                 # Parse templates for every new environment instances.
-                kwargs['loader'] = _jinja2.FileSystemLoader(template_path)
+                kwargs["loader"] = _jinja2.FileSystemLoader(template_path)
 
         # Initialize the environment.
         env = _jinja2.Environment(**kwargs)
 
-        if config['globals']:
-            env.globals.update(config['globals'])
+        if config["globals"]:
+            env.globals.update(config["globals"])
 
-        if config['filters']:
-            env.filters.update(config['filters'])
+        if config["filters"]:
+            env.filters.update(config["filters"])
 
         if enable_i18n:
             # Install i18n.
             from webapp2_extras import i18n
+
             env.install_gettext_callables(
                 lambda x: i18n.gettext(x),
                 lambda s, p, n: i18n.ngettext(s, p, n),
-                newstyle=True)
-            env.filters.update({
-                'format_date':      i18n.format_date,
-                'format_time':      i18n.format_time,
-                'format_datetime':  i18n.format_datetime,
-                'format_timedelta': i18n.format_timedelta,
-            })
+                newstyle=True,
+            )
+            env.filters.update(
+                {
+                    "format_date": i18n.format_date,
+                    "format_time": i18n.format_time,
+                    "format_datetime": i18n.format_datetime,
+                    "format_timedelta": i18n.format_timedelta,
+                }
+            )
 
         self.environment = env
 
@@ -200,7 +204,7 @@ class Jinja2:
 
 
 #: Key used to store :class:`Jinja2` in the app registry.
-_registry_key = 'webapp2_extras.jinja2.Jinja2'
+_registry_key = "webapp2_extras.jinja2.Jinja2"
 
 
 def get_jinja2(factory=Jinja2, key=_registry_key, app=None):

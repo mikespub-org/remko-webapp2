@@ -34,7 +34,6 @@ def check_webob_version(minimum_version):
 
 
 class BaseTestCase(unittest.TestCase):
-
     def setUp(self):
         """Set up the test framework.
 

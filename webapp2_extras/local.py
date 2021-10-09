@@ -46,6 +46,7 @@ except ImportError:  # pragma: no cover
 if get_current_greenlet is int:  # pragma: no cover
     get_ident = get_current_thread
 else:
+
     def get_ident():
         return get_current_thread(), get_current_greenlet()
 
@@ -59,11 +60,11 @@ class Local:
     Attributes are assigned or retrieved using the current thread.
     """
 
-    __slots__ = ('__storage__', '__lock__')
+    __slots__ = ("__storage__", "__lock__")
 
     def __init__(self):
-        object.__setattr__(self, '__storage__', {})
-        object.__setattr__(self, '__lock__', allocate_lock())
+        object.__setattr__(self, "__storage__", {})
+        object.__setattr__(self, "__lock__", allocate_lock())
 
     def __iter__(self):
         return self.__storage__.items()
@@ -135,36 +136,36 @@ class LocalProxy:
         route_kwargs = LocalProxy(lambda: webapp2.get_request().route_kwargs)
     """
 
-    __slots__ = ('__local', '__dict__', '__name__')
+    __slots__ = ("__local", "__dict__", "__name__")
 
     def __init__(self, local, name=None):
-        object.__setattr__(self, '_LocalProxy__local', local)
-        object.__setattr__(self, '__name__', name)
+        object.__setattr__(self, "_LocalProxy__local", local)
+        object.__setattr__(self, "__name__", name)
 
     def _get_current_object(self):
         """Return the current object.  This is useful if you want the real
         object behind the proxy at a time for performance reasons or because
         you want to pass the object into a different context.
         """
-        if not hasattr(self.__local, '__release_local__'):
+        if not hasattr(self.__local, "__release_local__"):
             return self.__local()
         try:
             return getattr(self.__local, self.__name__)
         except AttributeError:
-            raise RuntimeError('no object bound to %s' % self.__name__)
+            raise RuntimeError("no object bound to %s" % self.__name__)
 
     @property
     def __dict__(self):
         try:
             return self._get_current_object().__dict__
         except RuntimeError:
-            return AttributeError('__dict__')
+            return AttributeError("__dict__")
 
     def __repr__(self):
         try:
             obj = self._get_current_object()
         except RuntimeError:
-            return '<%s unbound>' % self.__class__.__name__
+            return "<%s unbound>" % self.__class__.__name__
         return repr(obj)
 
     def __bool__(self):
@@ -188,7 +189,7 @@ class LocalProxy:
             return []
 
     def __getattr__(self, name):
-        if name == '__members__':
+        if name == "__members__":
             return dir(self._get_current_object())
         return getattr(self._get_current_object(), name)
 

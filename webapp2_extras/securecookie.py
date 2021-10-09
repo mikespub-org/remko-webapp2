@@ -58,7 +58,7 @@ class SecureCookieSerializer:
         timestamp = webapp2._to_utf8(str(self._get_timestamp()))
         value = self._encode(value)
         signature = self._get_signature(name, value, timestamp)
-        return b'|'.join([value, timestamp, signature])
+        return b"|".join([value, timestamp, signature])
 
     def deserialize(self, name, value, max_age=None):
         """Deserializes a signed cookie value.
@@ -82,25 +82,25 @@ class SecureCookieSerializer:
         # Unquote for old WebOb.
         value = http_cookies._unquote(value)
 
-        parts = value.split(b'|')
+        parts = value.split(b"|")
         if len(parts) != 3:
             return None
 
         signature = self._get_signature(name, parts[0], parts[1])
 
         if not security.compare_hashes(parts[2], signature):
-            logging.warning('Invalid cookie signature %r', value)
+            logging.warning("Invalid cookie signature %r", value)
             return None
 
         if max_age is not None:
             if int(parts[1]) < self._get_timestamp() - max_age:
-                logging.warning('Expired cookie %r', value)
+                logging.warning("Expired cookie %r", value)
                 return None
 
         try:
             return self._decode(parts[0])
         except Exception:
-            logging.warning('Cookie value failed to be decoded: %r', parts[0])
+            logging.warning("Cookie value failed to be decoded: %r", parts[0])
             return None
 
     def _encode(self, value):
@@ -115,5 +115,5 @@ class SecureCookieSerializer:
     def _get_signature(self, *parts):
         """Generates an HMAC signature."""
         signature = hmac.new(self.secret_key, digestmod=hashlib.sha1)
-        signature.update(b'|'.join(parts))
+        signature.update(b"|".join(parts))
         return webapp2._to_utf8(signature.hexdigest())

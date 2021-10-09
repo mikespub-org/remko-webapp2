@@ -16,15 +16,12 @@
 import webapp2
 
 
-NEW_BASE_URL = 'https://webapp2.readthedocs.org/'
+NEW_BASE_URL = "https://webapp2.readthedocs.org/"
 
 
 class RedirectHandler(webapp2.RequestHandler):
     def get(self, uri):
-        return webapp2.redirect(
-            NEW_BASE_URL + uri,
-            permanent=True)
+        return webapp2.redirect(NEW_BASE_URL + uri, permanent=True)
 
 
-app = webapp2.WSGIApplication([
-    webapp2.Route(r'/<:.*>', RedirectHandler)])
+app = webapp2.WSGIApplication([webapp2.Route(r"/<:.*>", RedirectHandler)])

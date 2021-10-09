@@ -90,6 +90,7 @@ class Unique(model.Model):
         :returns:
             True if the unique value was created, False otherwise.
         """
+
         def txn(e):
             return e.put() if not e.key.get() else None
 
@@ -165,7 +166,7 @@ class UserToken(model.Model):
             ``model.Key`` containing a string id in the following format:
             ``{user_id}.{subject}.{token}.``
         """
-        return model.Key(cls, '{}.{}.{}'.format(str(user), subject, token))
+        return model.Key(cls, f"{str(user)}.{subject}.{token}")
 
     @classmethod
     def create(cls, user, subject, token=None):
@@ -210,8 +211,9 @@ class UserToken(model.Model):
         if user and subject and token:
             return cls.get_key(user, subject, token).get()
 
-        assert subject and token, \
-            'subject and token must be provided to UserToken.get().'
+        assert (
+            subject and token
+        ), "subject and token must be provided to UserToken.get()."
         return cls.query(cls.subject == subject, cls.token == token).get()
 
 
@@ -250,13 +252,13 @@ class User(model.Expando):
             caused creation to fail.
         """
         self.auth_ids.append(auth_id)
-        unique = '{}.auth_id:{}'.format(self.__class__.__name__, auth_id)
+        unique = f"{self.__class__.__name__}.auth_id:{auth_id}"
         ok = self.unique_model.create(unique)
         if ok:
             self.put()
             return True, self
         else:
-            return False, ['auth_id']
+            return False, ["auth_id"]
 
     @classmethod
     def get_by_auth_id(cls, auth_id):
@@ -284,7 +286,7 @@ class User(model.Expando):
             A tuple ``(User, timestamp)``, with a user object and
             the token timestamp, or ``(None, None)`` if both were not found.
         """
-        token_key = cls.token_model.get_key(user_id, 'auth', token)
+        token_key = cls.token_model.get_key(user_id, "auth", token)
         user_key = model.Key(cls, user_id)
         # Use get_multi() to save a RPC call.
         valid_token, user = model.get_multi([token_key, user_key])
@@ -332,8 +334,7 @@ class User(model.Expando):
         :returns:
             A :class:`UserToken` or None if the token does not exist.
         """
-        return cls.token_model.get(user=user_id, subject=subject,
-                                   token=token)
+        return cls.token_model.get(user=user_id, subject=subject, token=token)
 
     @classmethod
     def create_auth_token(cls, user_id):
@@ -344,11 +345,11 @@ class User(model.Expando):
         :returns:
             A string with the authorization token.
         """
-        return cls.token_model.create(user_id, 'auth').token
+        return cls.token_model.create(user_id, "auth").token
 
     @classmethod
     def validate_auth_token(cls, user_id, token):
-        return cls.validate_token(user_id, 'auth', token)
+        return cls.validate_token(user_id, "auth", token)
 
     @classmethod
     def delete_auth_token(cls, user_id, token):
@@ -359,20 +360,20 @@ class User(model.Expando):
         :param token:
             A string with the authorization token.
         """
-        cls.token_model.get_key(user_id, 'auth', token).delete()
+        cls.token_model.get_key(user_id, "auth", token).delete()
 
     @classmethod
     def create_signup_token(cls, user_id):
-        entity = cls.token_model.create(user_id, 'signup')
+        entity = cls.token_model.create(user_id, "signup")
         return entity.token
 
     @classmethod
     def validate_signup_token(cls, user_id, token):
-        return cls.validate_token(user_id, 'signup', token)
+        return cls.validate_token(user_id, "signup", token)
 
     @classmethod
     def delete_signup_token(cls, user_id, token):
-        cls.token_model.get_key(user_id, 'signup', token).delete()
+        cls.token_model.get_key(user_id, "signup", token).delete()
 
     @classmethod
     def create_user(cls, auth_id, unique_properties=None, **user_values):
@@ -400,25 +401,28 @@ class User(model.Expando):
             otherwise it is a list of duplicated unique properties that
             caused creation to fail.
         """
-        assert user_values.get('password') is None, \
-            'Use password_raw instead of password to create new users.'
+        assert (
+            user_values.get("password") is None
+        ), "Use password_raw instead of password to create new users."
 
-        assert not isinstance(auth_id, list), \
-            'Creating a user with multiple auth_ids is not allowed, ' \
-            'please provide a single auth_id.'
+        assert not isinstance(auth_id, list), (
+            "Creating a user with multiple auth_ids is not allowed, "
+            "please provide a single auth_id."
+        )
 
-        if 'password_raw' in user_values:
-            user_values['password'] = security.generate_password_hash(
-                user_values.pop('password_raw'), length=12)
+        if "password_raw" in user_values:
+            user_values["password"] = security.generate_password_hash(
+                user_values.pop("password_raw"), length=12
+            )
 
-        user_values['auth_ids'] = [auth_id]
+        user_values["auth_ids"] = [auth_id]
         user = cls(**user_values)
 
         # Set up unique properties.
-        uniques = [('{}.auth_id:{}'.format(cls.__name__, auth_id), 'auth_id')]
+        uniques = [(f"{cls.__name__}.auth_id:{auth_id}", "auth_id")]
         if unique_properties:
             for name in unique_properties:
-                key = '{}.{}:{}'.format(cls.__name__, name, user_values[name])
+                key = f"{cls.__name__}.{name}:{user_values[name]}"
                 uniques.append((key, name))
 
         ok, existing = cls.unique_model.create_multi(k for k, v in uniques)

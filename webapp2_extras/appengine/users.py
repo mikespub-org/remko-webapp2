@@ -35,11 +35,14 @@ def login_required(handler_method):
     redirect to the request URI, and Google Accounts only redirects back as
     a GET request, so this should not be used for POSTs.
     """
+
     def check_login(self, *args, **kwargs):
-        if self.request.method != 'GET':
-            self.abort(400,
-                       detail='The login_required decorator '
-                              'can only be used for GET requests.')
+        if self.request.method != "GET":
+            self.abort(
+                400,
+                detail="The login_required decorator "
+                "can only be used for GET requests.",
+            )
 
         user = users.get_current_user()
         if not user:
@@ -65,11 +68,14 @@ def admin_required(handler_method):
     redirect to the request URI, and Google Accounts only redirects back as
     a GET request, so this should not be used for POSTs.
     """
+
     def check_admin(self, *args, **kwargs):
-        if self.request.method != 'GET':
-            self.abort(400,
-                       detail='The admin_required decorator '
-                              'can only be used for GET requests.')
+        if self.request.method != "GET":
+            self.abort(
+                400,
+                detail="The admin_required decorator "
+                "can only be used for GET requests.",
+            )
 
         user = users.get_current_user()
         if not user:

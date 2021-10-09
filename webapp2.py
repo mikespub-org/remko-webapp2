@@ -65,7 +65,7 @@ except ImportError:
 
 # google.appengine.ext.webapp imports webapp2 in the
 # App Engine Python 2.7 runtime.
-if os.environ.get('APPENGINE_RUNTIME') != 'python27':  # pragma: no cover
+if os.environ.get("APPENGINE_RUNTIME") != "python27":  # pragma: no cover
     try:
         from google.appengine.ext import webapp as _webapp
     except ImportError:  # pragma: no cover
@@ -75,27 +75,32 @@ if os.environ.get('APPENGINE_RUNTIME') != 'python27':  # pragma: no cover
 try:  # pragma: no cover
     # Thread-local variables container.
     from webapp2_extras import local
+
     _local = local.Local()
 except ImportError:  # pragma: no cover
-    logging.warning("webapp2_extras.local is not available "
-                    "so webapp2 won't be thread-safe!")
+    logging.warning(
+        "webapp2_extras.local is not available " "so webapp2 won't be thread-safe!"
+    )
 
 
 __version_info__ = (3, 0, 0)
-__version__ = '.'.join(str(n) for n in __version_info__)
+__version__ = ".".join(str(n) for n in __version_info__)
 
 #: Base HTTP exception, set here as public interface.
 HTTPException = exc.HTTPException
 
 #: Regex for route definitions.
-_route_re = re.compile(r"""
+_route_re = re.compile(
+    r"""
     \<               # The exact character "<"
     ([a-zA-Z_]\w*)?  # The optional variable name
     (?:\:([^\>]*))?  # The optional :regex part
     \>               # The exact character ">"
-    """, re.VERBOSE)
+    """,
+    re.VERBOSE,
+)
 #: Regex extract charset from environ.
-_charset_re = re.compile(r';\s*charset=([^;]*)', re.I)
+_charset_re = re.compile(r";\s*charset=([^;]*)", re.I)
 
 #: To show exceptions in debug mode.
 _debug_template = """<html>
@@ -123,13 +128,13 @@ _debug_template = """<html>
 
 # Set same default messages from webapp plus missing ones.
 _webapp_status_reasons = {
-    203: 'Non-Authoritative Information',
-    302: 'Moved Temporarily',
-    306: 'Unused',
-    408: 'Request Time-out',
-    414: 'Request-URI Too Large',
-    504: 'Gateway Time-out',
-    505: 'HTTP Version not supported',
+    203: "Non-Authoritative Information",
+    302: "Moved Temporarily",
+    306: "Unused",
+    408: "Request Time-out",
+    414: "Request-URI Too Large",
+    504: "Gateway Time-out",
+    505: "HTTP Version not supported",
 }
 status_reasons.update(_webapp_status_reasons)
 for code, message in _webapp_status_reasons.items():
@@ -171,21 +176,22 @@ class Request(webob.Request):
         :param environ:
             A WSGI-compliant environment dictionary.
         """
-        if kwargs.get('charset') is None and not hasattr(webob, '__version__'):
+        if kwargs.get("charset") is None and not hasattr(webob, "__version__"):
             # webob 0.9 didn't have a __version__ attribute and also defaulted
             # to None rather than UTF-8 if no charset was provided. Providing a
             # default charset is required for backwards compatibility.
-            match = _charset_re.search(environ.get('CONTENT_TYPE', ''))
+            match = _charset_re.search(environ.get("CONTENT_TYPE", ""))
             if match:
                 self._request_charset = (
-                    match.group(1).lower().strip().strip('"').strip())
+                    match.group(1).lower().strip().strip('"').strip()
+                )
 
-        kwargs['charset'] = 'utf-8'
+        kwargs["charset"] = "utf-8"
 
         super().__init__(environ, *args, **kwargs)
         self.registry = {}
 
-    def get(self, argument_name, default_value='', allow_multiple=False):
+    def get(self, argument_name, default_value="", allow_multiple=False):
         """Returns the query or POST argument with the given name.
 
         We parse the query string and POST payload lazily, so this will be a
@@ -292,19 +298,16 @@ class Request(webob.Request):
         return value
 
     @classmethod
-    def blank(cls, path, environ=None, base_url=None,
-              headers=None, **kwargs):  # pragma: no cover
+    def blank(
+        cls, path, environ=None, base_url=None, headers=None, **kwargs
+    ):  # pragma: no cover
         """Adds parameters compatible with WebOb > 1.2: POST and **kwargs."""
         try:
             request = super().blank(
-                path,
-                environ=environ,
-                base_url=base_url,
-                headers=headers,
-                **kwargs
+                path, environ=environ, base_url=base_url, headers=headers, **kwargs
             )
 
-            if cls._request_charset and not cls._request_charset == 'utf-8':
+            if cls._request_charset and not cls._request_charset == "utf-8":
                 return request.decode(cls._request_charset)
             return request
 
@@ -312,21 +315,20 @@ class Request(webob.Request):
             if not kwargs:
                 raise
 
-        data = kwargs.pop('POST', None)
+        data = kwargs.pop("POST", None)
         if data is not None:
             environ = environ or {}
-            environ['REQUEST_METHOD'] = 'POST'
-            if hasattr(data, 'items'):
+            environ["REQUEST_METHOD"] = "POST"
+            if hasattr(data, "items"):
                 data = list(data.items())
             if not isinstance(data, str):
                 data = urlencode(data)
-            environ['wsgi.input'] = cStringIO(data)
-            environ['webob.is_body_seekable'] = True
-            environ['CONTENT_LENGTH'] = str(len(data))
-            environ['CONTENT_TYPE'] = 'application/x-www-form-urlencoded'
+            environ["wsgi.input"] = cStringIO(data)
+            environ["webob.is_body_seekable"] = True
+            environ["CONTENT_LENGTH"] = str(len(data))
+            environ["CONTENT_TYPE"] = "application/x-www-form-urlencoded"
 
-        base = super().blank(path, environ=environ,
-                                         base_url=base_url, headers=headers)
+        base = super().blank(path, environ=environ, base_url=base_url, headers=headers)
         if kwargs:
             obj = cls(base.environ, **kwargs)
             obj.headers.update(base.headers)
@@ -362,18 +364,18 @@ class ResponseHeaders(BaseResponseHeaders):
             parts.append(_value)
 
         for k, v in _params.items():
-            k = k.replace('_', '-')
+            k = k.replace("_", "-")
             if v is not None and len(v) > 0:
-                v = v.replace('\\', '\\\\').replace('"', r'\"')
-                parts.append('{}="{}"'.format(k, v))
+                v = v.replace("\\", "\\\\").replace('"', r"\"")
+                parts.append(f'{k}="{v}"')
             else:
                 parts.append(k)
 
-        self.add(_name, '; '.join(parts))
+        self.add(_name, "; ".join(parts))
 
     def __str__(self):
         """Returns the formatted headers ready for HTTP transmission."""
-        return '\r\n'.join(['%s: %s' % v for v in self.items()] + ['', ''])
+        return "\r\n".join(["%s: %s" % v for v in self.items()] + ["", ""])
 
 
 class Response(webob.Response):
@@ -395,12 +397,12 @@ class Response(webob.Response):
     """
 
     #: Default charset as in webapp.
-    default_charset = 'utf-8'
+    default_charset = "utf-8"
 
     def __init__(self, *args, **kwargs):
         """Constructs a response with the default settings."""
         super().__init__(*args, **kwargs)
-        self.headers['Cache-Control'] = 'no-cache'
+        self.headers["Cache-Control"] = "no-cache"
 
     @property
     def out(self):
@@ -438,16 +440,16 @@ class Response(webob.Response):
 
             if not isinstance(value, str):
                 raise TypeError(
-                    'You must set status to a string or integer (not %s)'
-                    % type(value))
+                    "You must set status to a string or integer (not %s)" % type(value)
+                )
 
-            parts = value.split(' ', 1)
+            parts = value.split(" ", 1)
             code = int(parts[0])
             if len(parts) == 2:
                 message = parts[1]
 
         message = message or Response.http_status_message(code)
-        self._status = '%d %s' % (code, message)
+        self._status = "%d %s" % (code, message)
 
     def _get_status(self):
         return self._status
@@ -464,19 +466,20 @@ class Response(webob.Response):
             HTTP/1.1 specification.
         """
         if message:
-            self.status = '%d %s' % (code, message)
+            self.status = "%d %s" % (code, message)
         else:
             self.status = code
 
     def _get_status_message(self):
         """The response status message, as a string."""
-        return self.status.split(' ', 1)[1]
+        return self.status.split(" ", 1)[1]
 
     def _set_status_message(self, message):
-        self.status = '%d %s' % (self.status_int, message)
+        self.status = "%d %s" % (self.status_int, message)
 
-    status_message = property(_get_status_message, _set_status_message,
-                              doc=_get_status_message.__doc__)
+    status_message = property(
+        _get_status_message, _set_status_message, doc=_get_status_message.__doc__
+    )
 
     def _get_headers(self):
         """The headers as a dictionary-like object."""
@@ -486,10 +489,10 @@ class Response(webob.Response):
         return self._headers
 
     def _set_headers(self, value):
-        if hasattr(value, 'items'):
+        if hasattr(value, "items"):
             value = list(value.items())
         elif not isinstance(value, list):
-            raise TypeError('Response headers must be a list or dictionary.')
+            raise TypeError("Response headers must be a list or dictionary.")
 
         self.headerlist = value
         self._headers = None
@@ -502,7 +505,7 @@ class Response(webob.Response):
 
     def clear(self):
         """Clears all data written to the output stream so that it is empty."""
-        self.body = b''
+        self.body = b""
 
     def wsgi_write(self, start_response):
         """Writes this response using the given WSGI function.
@@ -512,10 +515,11 @@ class Response(webob.Response):
         :param start_response:
             The WSGI-compatible start_response function.
         """
-        if (self.headers.get('Cache-Control') == 'no-cache' and
-                not self.headers.get('Expires')):
-            self.headers['Expires'] = 'Fri, 01 Jan 1990 00:00:00 GMT'
-            self.headers['Content-Length'] = str(len(self.body))
+        if self.headers.get("Cache-Control") == "no-cache" and not self.headers.get(
+            "Expires"
+        ):
+            self.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+            self.headers["Content-Length"] = str(len(self.body))
 
         write = start_response(self.status, self.headerlist)
         write(self.body)
@@ -529,7 +533,7 @@ class Response(webob.Response):
         """
         message = status_reasons.get(code)
         if not message:
-            raise KeyError('Invalid HTTP status code: %d' % code)
+            raise KeyError("Invalid HTTP status code: %d" % code)
 
         return message
 
@@ -602,8 +606,8 @@ class RequestHandler:
             # The response MUST include an Allow header containing a
             # list of valid methods for the requested resource.
             # http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.6
-            valid = ', '.join(_get_handler_methods(self))
-            self.abort(405, headers=[('Allow', valid)])
+            valid = ", ".join(_get_handler_methods(self))
+            self.abort(405, headers=[("Allow", valid)])
 
         # The handler only receives *args if no named variables are set.
         args, kwargs = request.route_args, request.route_kwargs
@@ -641,25 +645,39 @@ class RequestHandler:
         """
         abort(code, *args, **kwargs)
 
-    def redirect(self, uri, permanent=False, abort=False, code=None,
-                 body=None):
+    def redirect(self, uri, permanent=False, abort=False, code=None, body=None):
         """Issues an HTTP redirect to the given relative URI.
 
         The arguments are described in :func:`redirect`.
         """
-        return redirect(uri, permanent=permanent, abort=abort, code=code,
-                        body=body, request=self.request,
-                        response=self.response)
+        return redirect(
+            uri,
+            permanent=permanent,
+            abort=abort,
+            code=code,
+            body=body,
+            request=self.request,
+            response=self.response,
+        )
 
-    def redirect_to(self, _name, _permanent=False, _abort=False, _code=None,
-                    _body=None, *args, **kwargs):
+    def redirect_to(
+        self,
+        _name,
+        _permanent=False,
+        _abort=False,
+        _code=None,
+        _body=None,
+        *args,
+        **kwargs,
+    ):
         """Convenience method mixing :meth:`redirect` and :meth:`uri_for`.
 
         The arguments are described in :func:`redirect` and :func:`uri_for`.
         """
         uri = self.uri_for(_name, *args, **kwargs)
-        return self.redirect(uri, permanent=_permanent, abort=_abort,
-                             code=_code, body=_body)
+        return self.redirect(
+            uri, permanent=_permanent, abort=_abort, code=_code, body=_body
+        )
 
     def uri_for(self, _name, *args, **kwargs):
         """Returns a URI for a named :class:`Route`.
@@ -667,6 +685,7 @@ class RequestHandler:
         .. seealso:: :meth:`Router.build`.
         """
         return self.app.router.build(self.request, _name, args, kwargs)
+
     # Alias.
     url_for = uri_for
 
@@ -712,11 +731,11 @@ class RedirectHandler(RequestHandler):
         - **_code**: The redirect status code. Default is 301 (permanent
           redirect).
         """
-        uri = kwargs.pop('_uri', '/')
-        permanent = kwargs.pop('_permanent', True)
-        code = kwargs.pop('_code', None)
+        uri = kwargs.pop("_uri", "/")
+        permanent = kwargs.pop("_permanent", True)
+        code = kwargs.pop("_code", None)
 
-        func = getattr(uri, '__call__', None)
+        func = getattr(uri, "__call__", None)
         if func:
             uri = func(self, *args, **kwargs)
 
@@ -803,8 +822,7 @@ class BaseRoute:
             If True, this route never matches and is used only to build URIs.
         """
         if build_only and name is None:
-            raise ValueError(
-                "Route %r is build_only but doesn't have a name." % self)
+            raise ValueError("Route %r is build_only but doesn't have a name." % self)
 
         self.template = template
         self.handler = handler
@@ -878,11 +896,11 @@ class SimpleRoute(BaseRoute):
     @cached_property
     def regex(self):
         """Lazy regex compiler."""
-        if not self.template.startswith('^'):
-            self.template = '^' + self.template
+        if not self.template.startswith("^"):
+            self.template = "^" + self.template
 
-        if not self.template.endswith('$'):
-            self.template += '$'
+        if not self.template.endswith("$"):
+            self.template += "$"
 
         return re.compile(self.template)
 
@@ -896,7 +914,7 @@ class SimpleRoute(BaseRoute):
             return self, match.groups(), {}
 
     def __repr__(self):
-        return '<SimpleRoute({!r}, {!r})>'.format(self.template, self.handler)
+        return f"<SimpleRoute({self.template!r}, {self.handler!r})>"
 
 
 class Route(BaseRoute):
@@ -919,9 +937,17 @@ class Route(BaseRoute):
     args_count = 0
     kwargs_count = 0
 
-    def __init__(self, template, handler=None, name=None, defaults=None,
-                 build_only=False, handler_method=None, methods=None,
-                 schemes=None):
+    def __init__(
+        self,
+        template,
+        handler=None,
+        name=None,
+        defaults=None,
+        build_only=False,
+        handler_method=None,
+        methods=None,
+        schemes=None,
+    ):
         r"""Initializes this route.
 
         :param template:
@@ -986,27 +1012,31 @@ class Route(BaseRoute):
             A sequence of URI schemes, e.g., ``['http']`` or ``['https']``.
             If set, the route will only match requests with these schemes.
         """
-        super().__init__(template, handler=handler, name=name,
-                                    build_only=build_only)
+        super().__init__(template, handler=handler, name=name, build_only=build_only)
         self.defaults = defaults or {}
         self.methods = methods
         self.schemes = schemes
-        if isinstance(handler, str) and ':' in handler:
+        if isinstance(handler, str) and ":" in handler:
             if handler_method:
                 raise ValueError(
                     "If handler_method is defined in a Route, handler "
-                    "can't have a colon (got %r)." % handler)
+                    "can't have a colon (got %r)." % handler
+                )
             else:
-                self.handler, self.handler_method = handler.rsplit(':', 1)
+                self.handler, self.handler_method = handler.rsplit(":", 1)
         else:
             self.handler_method = handler_method
 
     @cached_property
     def regex(self):
         """Lazy route template parser."""
-        regex, self.reverse_template, self.args_count, self.kwargs_count, \
-            self.variables = _parse_route_template(self.template,
-                                                   default_sufix='[^/]+')
+        (
+            regex,
+            self.reverse_template,
+            self.args_count,
+            self.kwargs_count,
+            self.variables,
+        ) = _parse_route_template(self.template, default_sufix="[^/]+")
         return regex
 
     def match(self, request):
@@ -1035,10 +1065,10 @@ class Route(BaseRoute):
 
         .. seealso:: :meth:`Router.build`.
         """
-        scheme = kwargs.pop('_scheme', None)
-        netloc = kwargs.pop('_netloc', None)
-        anchor = kwargs.pop('_fragment', None)
-        full = kwargs.pop('_full', False) and not scheme and not netloc
+        scheme = kwargs.pop("_scheme", None)
+        netloc = kwargs.pop("_netloc", None)
+        anchor = kwargs.pop("_fragment", None)
+        full = kwargs.pop("_full", False) and not scheme and not netloc
 
         if full or scheme or netloc:
             netloc = netloc or request.host
@@ -1059,7 +1089,7 @@ class Route(BaseRoute):
         variables = self.variables
         if self.args_count:
             for index, value in enumerate(args):
-                key = '__%d__' % index
+                key = "__%d__" % index
                 if key in variables:
                     kwargs[key] = value
 
@@ -1067,8 +1097,7 @@ class Route(BaseRoute):
         for name, regex in variables.items():
             value = kwargs.pop(name, self.defaults.get(name))
             if value is None:
-                raise KeyError('Missing argument "%s" to build URI.' %
-                               name.strip('_'))
+                raise KeyError('Missing argument "%s" to build URI.' % name.strip("_"))
 
             if not isinstance(value, str):
                 value = str(value)
@@ -1076,7 +1105,7 @@ class Route(BaseRoute):
             if not regex.match(value):
                 raise ValueError(
                     'URI building error: Value "%s" is not supported'
-                    'for argument "%s".' % (value, name.strip('_'))
+                    'for argument "%s".' % (value, name.strip("_"))
                 )
 
             values[name] = value
@@ -1084,9 +1113,13 @@ class Route(BaseRoute):
         return self.reverse_template % values, kwargs
 
     def __repr__(self):
-        return '<Route(%r, %r, name=%r, defaults=%r, build_only=%r)>' % \
-               (self.template, self.handler, self.name, self.defaults,
-                self.build_only)
+        return "<Route({!r}, {!r}, name={!r}, defaults={!r}, build_only={!r})>".format(
+            self.template,
+            self.handler,
+            self.name,
+            self.defaults,
+            self.build_only,
+        )
 
 
 class BaseHandlerAdapter:
@@ -1290,7 +1323,7 @@ class Router:
         """
         route = self.build_routes.get(name)
         if route is None:
-            raise KeyError('Route named %r is not defined.' % name)
+            raise KeyError("Route named %r is not defined." % name)
 
         return route.build(request, args, kwargs)
 
@@ -1353,11 +1386,10 @@ class Router:
 
     def __repr__(self):
         routes = self.match_routes + [
-            v for k, v in self.build_routes.items()
-            if v not in self.match_routes
+            v for k, v in self.build_routes.items() if v not in self.match_routes
         ]
 
-        return '<Router(%r)>' % routes
+        return "<Router(%r)>" % routes
 
     # Default matcher, builder, dispatcher and adapter.
     match = default_matcher
@@ -1376,8 +1408,9 @@ class Config(dict):
         dict.__init__(self, defaults or ())
         self.loaded = []
 
-    def load_config(self, key, default_values=None, user_values=None,
-                    required_keys=None):
+    def load_config(
+        self, key, default_values=None, user_values=None, required_keys=None
+    ):
         """Returns a configuration for a given key.
 
         This can be used by objects that define a default configuration. It
@@ -1419,8 +1452,7 @@ class Config(dict):
     def _validate_required(self, key, config, required_keys):
         missing = [k for k in required_keys if config.get(k) is None]
         if missing:
-            raise Exception(
-                'Missing configuration keys for {!r}: {!r}.'.format(key, missing))
+            raise Exception(f"Missing configuration keys for {key!r}: {missing!r}.")
 
 
 class RequestContext:
@@ -1477,8 +1509,9 @@ class WSGIApplication:
     """A WSGI-compliant application."""
 
     #: Allowed request methods.
-    allowed_methods = frozenset(('GET', 'POST', 'HEAD', 'OPTIONS', 'PUT',
-                                 'DELETE', 'TRACE'))
+    allowed_methods = frozenset(
+        ("GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE")
+    )
     #: Class used for the request object.
     request_class = Request
     #: Class used for the response object.
@@ -1599,7 +1632,7 @@ class WSGIApplication:
         """Last resource error for :meth:`__call__`."""
         logging.exception(exception)
         if self.debug:
-            lines = ''.join(traceback.format_exception(*sys.exc_info()))
+            lines = "".join(traceback.format_exception(*sys.exc_info()))
             body = _debug_template % html.escape(lines, quote=True)
             return Response(body=body, status=500)
 
@@ -1722,25 +1755,29 @@ class ImportStringError(Exception):
         self.import_name = import_name
         self.exception = exception
         msg = _import_string_error
-        name = ''
+        name = ""
         tracked = []
-        for part in import_name.split('.'):
-            name += (name and '.') + part
+        for part in import_name.split("."):
+            name += (name and ".") + part
             imported = import_string(name, silent=True)
             if imported:
                 tracked.append((name, imported.__file__))
             else:
-                track = ['- %r found in %r.' % rv for rv in tracked]
-                track.append('- %r not found.' % name)
-                msg = msg % (import_name, exception.__class__.__name__,
-                             str(exception), '\n'.join(track))
+                track = ["- %r found in %r." % rv for rv in tracked]
+                track.append("- %r not found." % name)
+                msg = msg % (
+                    import_name,
+                    exception.__class__.__name__,
+                    str(exception),
+                    "\n".join(track),
+                )
                 break
 
         Exception.__init__(self, msg)
 
 
-_get_app_error = 'WSGIApplication global variable is not set.'
-_get_request_error = 'Request global variable is not set.'
+_get_app_error = "WSGIApplication global variable is not set."
+_get_request_error = "Request global variable is not set."
 
 
 def get_app():
@@ -1750,7 +1787,7 @@ def get_app():
         A :class:`WSGIApplication` instance.
     """
     if _local:
-        assert getattr(_local, 'app', None) is not None, _get_app_error
+        assert getattr(_local, "app", None) is not None, _get_app_error
     else:
         assert WSGIApplication.app is not None, _get_app_error
 
@@ -1764,7 +1801,7 @@ def get_request():
         A :class:`Request` instance.
     """
     if _local:
-        assert getattr(_local, 'request', None) is not None, _get_request_error
+        assert getattr(_local, "request", None) is not None, _get_request_error
     else:
         assert WSGIApplication.request is not None, _get_request_error
 
@@ -1780,8 +1817,9 @@ def uri_for(_name, _request=None, *args, **kwargs):
     return request.app.router.build(request, _name, args, kwargs)
 
 
-def redirect(uri, permanent=False, abort=False, code=None, body=None,
-             request=None, response=None):
+def redirect(
+    uri, permanent=False, abort=False, code=None, body=None, request=None, response=None
+):
     """Issues an HTTP redirect to the given relative URI.
 
     This won't stop code execution unless **abort** is True. A common
@@ -1809,7 +1847,7 @@ def redirect(uri, permanent=False, abort=False, code=None, body=None,
     :returns:
         A :class:`Response` instance.
     """
-    if uri.startswith(('.', '/')):
+    if uri.startswith((".", "/")):
         request = request or get_request()
         uri = str(urljoin(request.url, uri))
 
@@ -1819,12 +1857,11 @@ def redirect(uri, permanent=False, abort=False, code=None, body=None,
         else:
             code = 302
 
-    assert code in (301, 302, 303, 305, 307), \
-        'Invalid redirect status code.'
+    assert code in (301, 302, 303, 305, 307), "Invalid redirect status code."
 
     if abort:
         headers = response.headers.copy() if response is not None else []
-        headers['Location'] = uri
+        headers["Location"] = uri
         _abort(code, headers=headers)
 
     if response is None:
@@ -1833,7 +1870,7 @@ def redirect(uri, permanent=False, abort=False, code=None, body=None,
     else:
         response.clear()
 
-    response.headers['Location'] = uri
+    response.headers["Location"] = uri
     response.status = code
     if body is not None:
         response.write(body)
@@ -1841,8 +1878,17 @@ def redirect(uri, permanent=False, abort=False, code=None, body=None,
     return response
 
 
-def redirect_to(_name, _permanent=False, _abort=False, _code=None,
-                _body=None, _request=None, _response=None, *args, **kwargs):
+def redirect_to(
+    _name,
+    _permanent=False,
+    _abort=False,
+    _code=None,
+    _body=None,
+    _request=None,
+    _response=None,
+    *args,
+    **kwargs,
+):
     """Convenience function mixing :func:`redirect` and :func:`uri_for`.
 
     Issues an HTTP redirect to a named URI built using :func:`uri_for`.
@@ -1859,8 +1905,15 @@ def redirect_to(_name, _permanent=False, _abort=False, _code=None,
     The other arguments are described in :func:`redirect`.
     """
     uri = uri_for(_name, _request=_request, *args, **kwargs)
-    return redirect(uri, permanent=_permanent, abort=_abort, code=_code,
-                    body=_body, request=_request, response=_response)
+    return redirect(
+        uri,
+        permanent=_permanent,
+        abort=_abort,
+        code=_code,
+        body=_body,
+        request=_request,
+        response=_response,
+    )
 
 
 def abort(code, *args, **kwargs):
@@ -1875,7 +1928,7 @@ def abort(code, *args, **kwargs):
     """
     cls = exc.status_map.get(code)
     if not cls:
-        raise KeyError('No exception is defined for code %r.' % code)
+        raise KeyError("No exception is defined for code %r." % code)
 
     raise cls(*args, **kwargs)
 
@@ -1894,8 +1947,8 @@ def import_string(import_name, silent=False):
         The imported object.
     """
     try:
-        if '.' in import_name:
-            module, obj = import_name.rsplit('.', 1)
+        if "." in import_name:
+            module, obj = import_name.rsplit(".", 1)
             return getattr(__import__(module, None, None, [obj]), obj)
         else:
             return __import__(import_name)
@@ -1904,8 +1957,7 @@ def import_string(import_name, silent=False):
             raise ImportStringError(import_name, e)
 
 
-def _urlunsplit(scheme=None, netloc=None, path=None, query=None,
-                fragment=None):
+def _urlunsplit(scheme=None, netloc=None, path=None, query=None, fragment=None):
     """Like ``urlparse.urlunsplit``, but will escape values and urlencode and
     sort query arguments.
 
@@ -1924,7 +1976,7 @@ def _urlunsplit(scheme=None, netloc=None, path=None, query=None,
         An assembled absolute or relative URI.
     """
     if not scheme or not netloc:
-        scheme = ''
+        scheme = ""
         netloc = None
 
     if path:
@@ -1961,7 +2013,7 @@ def _get_handler_methods(handler):
 
 def _normalize_handler_method(method):
     """Transforms an HTTP method into a valid Python identifier."""
-    return method.lower().replace('-', '_')
+    return method.lower().replace("-", "_")
 
 
 def _to_utf8(value):
@@ -1972,9 +2024,7 @@ def _to_utf8(value):
     if isinstance(value, (bytes, type(None))):
         return value
     if not isinstance(value, str):
-        raise TypeError(
-            "Expected bytes, unicode, or None; got %r" % type(value)
-        )
+        raise TypeError("Expected bytes, unicode, or None; got %r" % type(value))
     return value.encode("utf-8")
 
 
@@ -1992,35 +2042,33 @@ def _to_basestring(value):
     if isinstance(value, str):
         return value
     if not isinstance(value, bytes):
-        raise TypeError(
-            "Expected bytes, unicode, or None; got %r" % type(value)
-        )
+        raise TypeError("Expected bytes, unicode, or None; got %r" % type(value))
     return value.decode("utf-8")
 
 
-def _parse_route_template(template, default_sufix=''):
+def _parse_route_template(template, default_sufix=""):
     """Lazy route template parser."""
     variables = {}
-    reverse_template = pattern = ''
+    reverse_template = pattern = ""
     args_count = last = 0
     for match in _route_re.finditer(template):
-        part = template[last:match.start()]
+        part = template[last : match.start()]
         name = match.group(1)
         expr = match.group(2) or default_sufix
         last = match.end()
 
         if not name:
-            name = '__%d__' % args_count
+            name = "__%d__" % args_count
             args_count += 1
 
-        pattern += '{}(?P<{}>{})'.format(re.escape(part), name, expr)
-        reverse_template += '{}%({})s'.format(part, name)
-        variables[name] = re.compile('^%s$' % expr)
+        pattern += f"{re.escape(part)}(?P<{name}>{expr})"
+        reverse_template += f"{part}%({name})s"
+        variables[name] = re.compile("^%s$" % expr)
 
     part = template[last:]
     kwargs_count = len(variables) - args_count
     reverse_template += part
-    regex = re.compile('^{}{}$'.format(pattern, re.escape(part)))
+    regex = re.compile(f"^{pattern}{re.escape(part)}$")
     return regex, reverse_template, args_count, kwargs_count, variables
 
 
@@ -2029,9 +2077,14 @@ def _get_route_variables(match, default_kwargs=None):
     kwargs = default_kwargs or {}
     kwargs.update(match.groupdict())
     if kwargs:
-        args = tuple(value[1] for value in sorted(
-            (int(key[2:-2]), kwargs.pop(key)) for key in list(kwargs.keys())
-            if key.startswith('__') and key.endswith('__')))
+        args = tuple(
+            value[1]
+            for value in sorted(
+                (int(key[2:-2]), kwargs.pop(key))
+                for key in list(kwargs.keys())
+                if key.startswith("__") and key.endswith("__")
+            )
+        )
     else:
         args = ()
 
@@ -2041,8 +2094,8 @@ def _get_route_variables(match, default_kwargs=None):
 def _set_thread_safe_app():
     """Assigns WSGIApplication globals to a proxy pointing to thread-local."""
     if _local is not None:  # pragma: no cover
-        WSGIApplication.app = WSGIApplication.active_instance = _local('app')
-        WSGIApplication.request = _local('request')
+        WSGIApplication.app = WSGIApplication.active_instance = _local("app")
+        WSGIApplication.request = _local("request")
 
 
 Request.ResponseClass = Response

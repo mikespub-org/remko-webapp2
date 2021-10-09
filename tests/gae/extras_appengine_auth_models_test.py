@@ -29,16 +29,15 @@ class User(model.Model):
 
 
 class TestAuthModels(test_base.BaseTestCase):
-
     def setUp(self):
         super().setUp()
-        self.register_model('User', models.User)
-        self.register_model('UserToken', models.UserToken)
-        self.register_model('Unique', models.Unique)
+        self.register_model("User", models.User)
+        self.register_model("UserToken", models.UserToken)
+        self.register_model("Unique", models.Unique)
 
     def test_get(self):
         m = models.User
-        success, user = m.create_user(auth_id='auth_id_1', password_raw='foo')
+        success, user = m.create_user(auth_id="auth_id_1", password_raw="foo")
         self.assertEqual(success, True)
         self.assertTrue(user is not None)
         self.assertTrue(user.password is not None)
@@ -48,81 +47,79 @@ class TestAuthModels(test_base.BaseTestCase):
 
         token = m.create_auth_token(user_id)
 
-        self.assertEqual(m.get_by_auth_id('auth_id_1'), user)
-        self.assertEqual(m.get_by_auth_id('auth_id_2'), None)
+        self.assertEqual(m.get_by_auth_id("auth_id_1"), user)
+        self.assertEqual(m.get_by_auth_id("auth_id_2"), None)
 
         u, ts = m.get_by_auth_token(user_id, token)
         self.assertEqual(u, user)
-        u, ts = m.get_by_auth_token('fake_user_id', token)
+        u, ts = m.get_by_auth_token("fake_user_id", token)
         self.assertEqual(u, None)
 
-        u = m.get_by_auth_password('auth_id_1', 'foo')
+        u = m.get_by_auth_password("auth_id_1", "foo")
         self.assertEqual(u, user)
-        self.assertRaises(auth.InvalidPasswordError,
-                          m.get_by_auth_password, 'auth_id_1', 'bar')
-        self.assertRaises(auth.InvalidAuthIdError,
-                          m.get_by_auth_password, 'auth_id_2', 'foo')
+        self.assertRaises(
+            auth.InvalidPasswordError, m.get_by_auth_password, "auth_id_1", "bar"
+        )
+        self.assertRaises(
+            auth.InvalidAuthIdError, m.get_by_auth_password, "auth_id_2", "foo"
+        )
 
     def test_create_user(self):
         m = models.User
-        success, info = m.create_user(auth_id='auth_id_1', password_raw='foo')
+        success, info = m.create_user(auth_id="auth_id_1", password_raw="foo")
         self.assertEqual(success, True)
         self.assertTrue(info is not None)
         self.assertTrue(info.password is not None)
 
-        success, info = m.create_user(auth_id='auth_id_1')
+        success, info = m.create_user(auth_id="auth_id_1")
         self.assertEqual(success, False)
-        self.assertEqual(info, ['auth_id'])
+        self.assertEqual(info, ["auth_id"])
 
         # 3 extras and unique properties; plus 1 extra and not unique.
-        extras = ['foo', 'bar', 'baz']
-        values = {v: v + '_value' for v in extras}
-        values['ding'] = 'ding_value'
-        success, info = m.create_user(auth_id='auth_id_2',
-                                      unique_properties=extras, **values)
+        extras = ["foo", "bar", "baz"]
+        values = {v: v + "_value" for v in extras}
+        values["ding"] = "ding_value"
+        success, info = m.create_user(
+            auth_id="auth_id_2", unique_properties=extras, **values
+        )
         self.assertEqual(success, True)
         self.assertTrue(info is not None)
         for prop in extras:
-            self.assertEqual(getattr(info, prop), prop + '_value')
-        self.assertEqual(info.ding, 'ding_value')
+            self.assertEqual(getattr(info, prop), prop + "_value")
+        self.assertEqual(info.ding, "ding_value")
 
         # Let's do it again.
-        success, info = m.create_user(auth_id='auth_id_3',
-                                      unique_properties=extras, **values)
+        success, info = m.create_user(
+            auth_id="auth_id_3", unique_properties=extras, **values
+        )
         self.assertEqual(success, False)
         self.assertEqual(info, extras)
 
     def test_add_auth_ids(self):
         m = models.User
-        success, new_user = m.create_user(
-            auth_id='auth_id_1',
-            password_raw='foo'
-        )
+        success, new_user = m.create_user(auth_id="auth_id_1", password_raw="foo")
         self.assertEqual(success, True)
         self.assertTrue(new_user is not None)
         self.assertTrue(new_user.password is not None)
 
-        success, new_user_2 = m.create_user(
-            auth_id='auth_id_2',
-            password_raw='foo'
-        )
+        success, new_user_2 = m.create_user(auth_id="auth_id_2", password_raw="foo")
         self.assertEqual(success, True)
         self.assertTrue(new_user is not None)
         self.assertTrue(new_user.password is not None)
 
-        success, info = new_user.add_auth_id('auth_id_3')
+        success, info = new_user.add_auth_id("auth_id_3")
         self.assertEqual(success, True)
-        self.assertEqual(info.auth_ids, ['auth_id_1', 'auth_id_3'])
+        self.assertEqual(info.auth_ids, ["auth_id_1", "auth_id_3"])
 
-        success, info = new_user.add_auth_id('auth_id_2')
+        success, info = new_user.add_auth_id("auth_id_2")
         self.assertEqual(success, False)
-        self.assertEqual(info, ['auth_id'])
+        self.assertEqual(info, ["auth_id"])
 
     def test_token(self):
         m = models.UserToken
 
-        auth_id = 'foo'
-        subject = 'bar'
+        auth_id = "foo"
+        subject = "bar"
         token_1 = m.create(auth_id, subject, token=None)
         token = token_1.token
 
@@ -142,7 +139,7 @@ class TestAuthModels(test_base.BaseTestCase):
 
     def test_user_token(self):
         m = models.User
-        auth_id = 'foo'
+        auth_id = "foo"
 
         token = m.create_auth_token(auth_id)
         self.assertIsNotNone(m.validate_auth_token(auth_id, token))
@@ -158,12 +155,12 @@ class TestAuthModels(test_base.BaseTestCase):
 class TestUniqueModel(test_base.BaseTestCase):
     def setUp(self):
         super().setUp()
-        self.register_model('Unique', models.Unique)
+        self.register_model("Unique", models.Unique)
 
     def test_single(self):
         def create_user(username):
             # Assemble the unique scope/value combinations.
-            unique_username = 'User.username:%s' % username
+            unique_username = "User.username:%s" % username
 
             # Create the unique username, auth_id and email.
             success = models.Unique.create(unique_username)
@@ -173,21 +170,20 @@ class TestUniqueModel(test_base.BaseTestCase):
                 user.put()
                 return user
             else:
-                raise UniqueConstraintViolation(
-                    'Username %s already exists' % username)
+                raise UniqueConstraintViolation("Username %s already exists" % username)
 
-        create_user('username_1')
-        self.assertRaises(UniqueConstraintViolation, create_user, 'username_1')
+        create_user("username_1")
+        self.assertRaises(UniqueConstraintViolation, create_user, "username_1")
 
-        create_user('username_2')
-        self.assertRaises(UniqueConstraintViolation, create_user, 'username_2')
+        create_user("username_2")
+        self.assertRaises(UniqueConstraintViolation, create_user, "username_2")
 
     def test_multi(self):
         def create_user(username, auth_id, email):
             # Assemble the unique scope/value combinations.
-            unique_username = 'User.username:%s' % username
-            unique_auth_id = 'User.auth_id:%s' % auth_id
-            unique_email = 'User.email:%s' % email
+            unique_username = "User.username:%s" % username
+            unique_auth_id = "User.auth_id:%s" % auth_id
+            unique_email = "User.email:%s" % email
 
             # Create the unique username, auth_id and email.
             uniques = [unique_username, unique_auth_id, unique_email]
@@ -200,47 +196,48 @@ class TestUniqueModel(test_base.BaseTestCase):
             else:
                 if unique_username in existing:
                     raise UniqueConstraintViolation(
-                        'Username %s already exists' % username)
+                        "Username %s already exists" % username
+                    )
                 if unique_auth_id in existing:
                     raise UniqueConstraintViolation(
-                        'Auth id %s already exists' % auth_id)
+                        "Auth id %s already exists" % auth_id
+                    )
                 if unique_email in existing:
-                    raise UniqueConstraintViolation(
-                        'Email %s already exists' % email)
+                    raise UniqueConstraintViolation("Email %s already exists" % email)
 
-        create_user('username_1', 'auth_id_1', 'email_1')
+        create_user("username_1", "auth_id_1", "email_1")
         self.assertRaises(
-            UniqueConstraintViolation,
-            create_user, 'username_1', 'auth_id_2', 'email_2')
+            UniqueConstraintViolation, create_user, "username_1", "auth_id_2", "email_2"
+        )
         self.assertRaises(
-            UniqueConstraintViolation,
-            create_user, 'username_2', 'auth_id_1', 'email_2')
+            UniqueConstraintViolation, create_user, "username_2", "auth_id_1", "email_2"
+        )
         self.assertRaises(
-            UniqueConstraintViolation,
-            create_user, 'username_2', 'auth_id_2', 'email_1')
+            UniqueConstraintViolation, create_user, "username_2", "auth_id_2", "email_1"
+        )
 
-        create_user('username_2', 'auth_id_2', 'email_2')
+        create_user("username_2", "auth_id_2", "email_2")
         self.assertRaises(
-            UniqueConstraintViolation,
-            create_user, 'username_2', 'auth_id_1', 'email_1')
+            UniqueConstraintViolation, create_user, "username_2", "auth_id_1", "email_1"
+        )
         self.assertRaises(
-            UniqueConstraintViolation,
-            create_user, 'username_1', 'auth_id_2', 'email_1')
+            UniqueConstraintViolation, create_user, "username_1", "auth_id_2", "email_1"
+        )
         self.assertRaises(
-            UniqueConstraintViolation,
-            create_user, 'username_1', 'auth_id_1', 'email_2')
+            UniqueConstraintViolation, create_user, "username_1", "auth_id_1", "email_2"
+        )
 
     def test_delete_multi(self):
-        rv = models.Unique.create_multi(('foo', 'bar', 'baz'))
+        rv = models.Unique.create_multi(("foo", "bar", "baz"))
         self.assertEqual(rv, (True, []))
-        rv = models.Unique.create_multi(('foo', 'bar', 'baz'))
-        self.assertEqual(rv, (False, ['foo', 'bar', 'baz']))
+        rv = models.Unique.create_multi(("foo", "bar", "baz"))
+        self.assertEqual(rv, (False, ["foo", "bar", "baz"]))
 
-        models.Unique.delete_multi(('foo', 'bar', 'baz'))
+        models.Unique.delete_multi(("foo", "bar", "baz"))
 
-        rv = models.Unique.create_multi(('foo', 'bar', 'baz'))
+        rv = models.Unique.create_multi(("foo", "bar", "baz"))
         self.assertEqual(rv, (True, []))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_base.main()

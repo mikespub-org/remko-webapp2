@@ -33,7 +33,7 @@ except ImportError:
 class BareHandler:
     def __init__(self, request, response):
         self.response = response
-        response.write('I am not a RequestHandler but I work.')
+        response.write("I am not a RequestHandler but I work.")
 
     def dispatch(self):
         return self.response
@@ -41,83 +41,83 @@ class BareHandler:
 
 class HomeHandler(webapp2.RequestHandler):
     def get(self, **kwargs):
-        self.response.out.write('home sweet home')
+        self.response.out.write("home sweet home")
 
     def post(self, **kwargs):
-        self.response.out.write('home sweet home - POST')
+        self.response.out.write("home sweet home - POST")
 
 
 class MethodsHandler(HomeHandler):
     def put(self, **kwargs):
-        self.response.out.write('home sweet home - PUT')
+        self.response.out.write("home sweet home - PUT")
 
     def delete(self, **kwargs):
-        self.response.out.write('home sweet home - DELETE')
+        self.response.out.write("home sweet home - DELETE")
 
     def head(self, **kwargs):
-        self.response.out.write('home sweet home - HEAD')
+        self.response.out.write("home sweet home - HEAD")
 
     def trace(self, **kwargs):
-        self.response.out.write('home sweet home - TRACE')
+        self.response.out.write("home sweet home - TRACE")
 
     def options(self, **kwargs):
-        self.response.out.write('home sweet home - OPTIONS')
+        self.response.out.write("home sweet home - OPTIONS")
 
 
 class RedirectToHandler(webapp2.RequestHandler):
     def get(self, **kwargs):
         return self.redirect_to(
-            'route-test',
-            _fragment='my-anchor',
-            year='2010',
-            month='07',
-            name='test',
-            foo='bar'
+            "route-test",
+            _fragment="my-anchor",
+            year="2010",
+            month="07",
+            name="test",
+            foo="bar",
         )
 
 
 class RedirectAbortHandler(webapp2.RequestHandler):
     def get(self, **kwargs):
-        self.response.headers.add_header('Set-Cookie', 'a=b')
-        self.redirect('/somewhere', abort=True)
+        self.response.headers.add_header("Set-Cookie", "a=b")
+        self.redirect("/somewhere", abort=True)
 
 
 class BrokenHandler(webapp2.RequestHandler):
     def get(self, **kwargs):
-        raise ValueError('booo!')
+        raise ValueError("booo!")
 
 
 class BrokenButFixedHandler(BrokenHandler):
     def handle_exception(self, exception, debug_mode):
         # Let's fix it.
         self.response.set_status(200)
-        self.response.out.write('that was close!')
+        self.response.out.write("that was close!")
 
 
 def handle_404(request, response, exception):
-    response.out.write('404 custom handler')
+    response.out.write("404 custom handler")
     response.set_status(404)
 
 
 def handle_405(request, response, exception):
-    response.out.write('405 custom handler')
-    response.set_status(405, 'Custom Error Message')
-    response.headers['Allow'] = 'GET'
+    response.out.write("405 custom handler")
+    response.set_status(405, "Custom Error Message")
+    response.headers["Allow"] = "GET"
 
 
 def handle_500(request, response, exception):
-    response.out.write('500 custom handler')
+    response.out.write("500 custom handler")
     response.set_status(500)
 
 
 class PositionalHandler(webapp2.RequestHandler):
     def get(self, month, day, slug=None):
-        self.response.out.write('{}:{}:{}'.format(month, day, slug))
+        self.response.out.write(f"{month}:{day}:{slug}")
 
 
 class HandlerWithError(webapp2.RequestHandler):
     def get(self, **kwargs):
-        self.response.out.write('bla bla bla bla bla bla')
+        self.response.out.write("bla bla bla bla bla bla")
         self.error(403)
 
 
@@ -126,23 +126,23 @@ class InitializeHandler(webapp2.RequestHandler):
         pass
 
     def get(self):
-        self.response.out.write('Request method: %s' % self.request.method)
+        self.response.out.write("Request method: %s" % self.request.method)
 
 
 class WebDavHandler(webapp2.RequestHandler):
     def version_control(self):
-        self.response.out.write('Method: VERSION-CONTROL')
+        self.response.out.write("Method: VERSION-CONTROL")
 
     def unlock(self):
-        self.response.out.write('Method: UNLOCK')
+        self.response.out.write("Method: UNLOCK")
 
     def propfind(self):
-        self.response.out.write('Method: PROPFIND')
+        self.response.out.write("Method: PROPFIND")
 
 
 class AuthorizationHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.out.write('nothing here')
+        self.response.out.write("nothing here")
 
 
 class HandlerWithEscapedArg(webapp2.RequestHandler):
@@ -151,36 +151,49 @@ class HandlerWithEscapedArg(webapp2.RequestHandler):
 
 
 def get_redirect_url(handler, **kwargs):
-    return handler.uri_for('methods')
+    return handler.uri_for("methods")
 
 
-app = webapp2.WSGIApplication([
-    ('/bare', BareHandler),
-    webapp2.Route('/', HomeHandler, name='home'),
-    webapp2.Route('/methods', MethodsHandler, name='methods'),
-    webapp2.Route('/broken', BrokenHandler),
-    webapp2.Route('/broken-but-fixed', BrokenButFixedHandler),
-    webapp2.Route(r'/<year:\d{4}>/<month:\d{1,2}>/<name>', None,
-                  name='route-test'),
-    webapp2.Route(r'/<:\d\d>/<:\d{2}>/<:\w+>', PositionalHandler,
-                  name='positional'),
-    webapp2.Route('/redirect-me', webapp2.RedirectHandler,
-                  defaults={'_uri': '/broken'}),
-    webapp2.Route('/redirect-me2', webapp2.RedirectHandler,
-                  defaults={'_uri': get_redirect_url}),
-    webapp2.Route('/redirect-me3', webapp2.RedirectHandler,
-                  defaults={'_uri': '/broken', '_permanent': False}),
-    webapp2.Route('/redirect-me4', webapp2.RedirectHandler,
-                  defaults={'_uri': get_redirect_url, '_permanent': False}),
-    webapp2.Route('/redirect-me5', RedirectToHandler),
-    webapp2.Route('/redirect-me6', RedirectAbortHandler),
-    webapp2.Route('/lazy', 'tests.resources.handlers.LazyHandler'),
-    webapp2.Route('/error', HandlerWithError),
-    webapp2.Route('/initialize', InitializeHandler),
-    webapp2.Route('/webdav', WebDavHandler),
-    webapp2.Route('/authorization', AuthorizationHandler),
-    webapp2.Route('/escape/<name:.*>', HandlerWithEscapedArg, 'escape'),
-], debug=False)
+app = webapp2.WSGIApplication(
+    [
+        ("/bare", BareHandler),
+        webapp2.Route("/", HomeHandler, name="home"),
+        webapp2.Route("/methods", MethodsHandler, name="methods"),
+        webapp2.Route("/broken", BrokenHandler),
+        webapp2.Route("/broken-but-fixed", BrokenButFixedHandler),
+        webapp2.Route(r"/<year:\d{4}>/<month:\d{1,2}>/<name>", None, name="route-test"),
+        webapp2.Route(
+            r"/<:\d\d>/<:\d{2}>/<:\w+>", PositionalHandler, name="positional"
+        ),
+        webapp2.Route(
+            "/redirect-me", webapp2.RedirectHandler, defaults={"_uri": "/broken"}
+        ),
+        webapp2.Route(
+            "/redirect-me2",
+            webapp2.RedirectHandler,
+            defaults={"_uri": get_redirect_url},
+        ),
+        webapp2.Route(
+            "/redirect-me3",
+            webapp2.RedirectHandler,
+            defaults={"_uri": "/broken", "_permanent": False},
+        ),
+        webapp2.Route(
+            "/redirect-me4",
+            webapp2.RedirectHandler,
+            defaults={"_uri": get_redirect_url, "_permanent": False},
+        ),
+        webapp2.Route("/redirect-me5", RedirectToHandler),
+        webapp2.Route("/redirect-me6", RedirectAbortHandler),
+        webapp2.Route("/lazy", "tests.resources.handlers.LazyHandler"),
+        webapp2.Route("/error", HandlerWithError),
+        webapp2.Route("/initialize", InitializeHandler),
+        webapp2.Route("/webdav", WebDavHandler),
+        webapp2.Route("/authorization", AuthorizationHandler),
+        webapp2.Route("/escape/<name:.*>", HandlerWithEscapedArg, "escape"),
+    ],
+    debug=False,
+)
 
 DEFAULT_RESPONSE = """Status: 404 Not Found
 content-type: text/html; charset=utf8
@@ -199,57 +212,60 @@ class TestHandler(BaseTestCase):
         app.error_handlers = {}
 
     def test_200(self):
-        rsp = app.get_response('/')
+        rsp = app.get_response("/")
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'home sweet home')
+        self.assertEqual(rsp.body, b"home sweet home")
 
     def test_404(self):
-        req = webapp2.Request.blank('/nowhere')
+        req = webapp2.Request.blank("/nowhere")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 404)
 
     def test_405(self):
-        req = webapp2.Request.blank('/')
-        req.method = 'PUT'
+        req = webapp2.Request.blank("/")
+        req.method = "PUT"
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 405)
-        self.assertEqual(rsp.headers.get('Allow'), 'GET, POST')
+        self.assertEqual(rsp.headers.get("Allow"), "GET, POST")
 
     def test_500(self):
-        req = webapp2.Request.blank('/broken')
+        req = webapp2.Request.blank("/broken")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 500)
 
     def test_500_but_fixed(self):
-        req = webapp2.Request.blank('/broken-but-fixed')
+        req = webapp2.Request.blank("/broken-but-fixed")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'that was close!')
+        self.assertEqual(rsp.body, b"that was close!")
 
     def test_501(self):
         # 501 Not Implemented
-        req = webapp2.Request.blank('/methods')
-        req.method = 'FOOBAR'
+        req = webapp2.Request.blank("/methods")
+        req.method = "FOOBAR"
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 501)
 
     def test_lazy_handler(self):
-        req = webapp2.Request.blank('/lazy')
+        req = webapp2.Request.blank("/lazy")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'I am a laaazy view.')
+        self.assertEqual(rsp.body, b"I am a laaazy view.")
 
     def test_handler_with_error(self):
-        req = webapp2.Request.blank('/error')
+        req = webapp2.Request.blank("/error")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 403)
-        self.assertEqual(rsp.body, b'')
+        self.assertEqual(rsp.body, b"")
 
     def test_debug_mode(self):
-        app = webapp2.WSGIApplication([
-            webapp2.Route('/broken', BrokenHandler),
-        ], debug=True)
-        req = webapp2.Request.blank('/broken')
+        app = webapp2.WSGIApplication(
+            [
+                webapp2.Route("/broken", BrokenHandler),
+            ],
+            debug=True,
+        )
+        req = webapp2.Request.blank("/broken")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 500)
 
@@ -259,163 +275,146 @@ class TestHandler(BaseTestCase):
             405: handle_405,
             500: handle_500,
         }
-        req = webapp2.Request.blank('/nowhere')
+        req = webapp2.Request.blank("/nowhere")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 404)
-        self.assertEqual(rsp.body, b'404 custom handler')
+        self.assertEqual(rsp.body, b"404 custom handler")
 
-        req = webapp2.Request.blank('/')
-        req.method = 'PUT'
+        req = webapp2.Request.blank("/")
+        req.method = "PUT"
         rsp = req.get_response(app)
-        self.assertEqual(rsp.status, '405 Custom Error Message')
-        self.assertEqual(rsp.body, b'405 custom handler')
-        self.assertEqual(rsp.headers.get('Allow'), 'GET')
+        self.assertEqual(rsp.status, "405 Custom Error Message")
+        self.assertEqual(rsp.body, b"405 custom handler")
+        self.assertEqual(rsp.headers.get("Allow"), "GET")
 
-        req = webapp2.Request.blank('/broken')
+        req = webapp2.Request.blank("/broken")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 500)
-        self.assertEqual(rsp.body, b'500 custom handler')
+        self.assertEqual(rsp.body, b"500 custom handler")
 
     def test_methods(self):
         app.debug = True
-        req = webapp2.Request.blank('/methods')
+        req = webapp2.Request.blank("/methods")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'home sweet home')
+        self.assertEqual(rsp.body, b"home sweet home")
 
-        req = webapp2.Request.blank('/methods')
-        req.method = 'POST'
+        req = webapp2.Request.blank("/methods")
+        req.method = "POST"
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'home sweet home - POST')
+        self.assertEqual(rsp.body, b"home sweet home - POST")
 
-        req = webapp2.Request.blank('/methods')
-        req.method = 'PUT'
+        req = webapp2.Request.blank("/methods")
+        req.method = "PUT"
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'home sweet home - PUT')
+        self.assertEqual(rsp.body, b"home sweet home - PUT")
 
-        req = webapp2.Request.blank('/methods')
-        req.method = 'DELETE'
+        req = webapp2.Request.blank("/methods")
+        req.method = "DELETE"
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'home sweet home - DELETE')
+        self.assertEqual(rsp.body, b"home sweet home - DELETE")
 
-        req = webapp2.Request.blank('/methods')
-        req.method = 'HEAD'
+        req = webapp2.Request.blank("/methods")
+        req.method = "HEAD"
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'')
+        self.assertEqual(rsp.body, b"")
 
-        req = webapp2.Request.blank('/methods')
-        req.method = 'OPTIONS'
+        req = webapp2.Request.blank("/methods")
+        req.method = "OPTIONS"
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'home sweet home - OPTIONS')
+        self.assertEqual(rsp.body, b"home sweet home - OPTIONS")
 
-        req = webapp2.Request.blank('/methods')
-        req.method = 'TRACE'
+        req = webapp2.Request.blank("/methods")
+        req.method = "TRACE"
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'home sweet home - TRACE')
+        self.assertEqual(rsp.body, b"home sweet home - TRACE")
         app.debug = False
 
     def test_positional(self):
-        req = webapp2.Request.blank('/07/31/test')
+        req = webapp2.Request.blank("/07/31/test")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'07:31:test')
+        self.assertEqual(rsp.body, b"07:31:test")
 
-        req = webapp2.Request.blank('/10/18/wooohooo')
+        req = webapp2.Request.blank("/10/18/wooohooo")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'10:18:wooohooo')
+        self.assertEqual(rsp.body, b"10:18:wooohooo")
 
     def test_redirect(self):
-        req = webapp2.Request.blank('/redirect-me')
+        req = webapp2.Request.blank("/redirect-me")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 301)
-        self.assertEqual(rsp.body, b'')
-        self.assertEqual(rsp.headers['Location'], 'http://localhost/broken')
+        self.assertEqual(rsp.body, b"")
+        self.assertEqual(rsp.headers["Location"], "http://localhost/broken")
 
     def test_redirect_with_callable(self):
-        req = webapp2.Request.blank('/redirect-me2')
+        req = webapp2.Request.blank("/redirect-me2")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 301)
-        self.assertEqual(rsp.body, b'')
-        self.assertEqual(rsp.headers['Location'], 'http://localhost/methods')
+        self.assertEqual(rsp.body, b"")
+        self.assertEqual(rsp.headers["Location"], "http://localhost/methods")
 
     def test_redirect_not_permanent(self):
-        req = webapp2.Request.blank('/redirect-me3')
+        req = webapp2.Request.blank("/redirect-me3")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 302)
-        self.assertEqual(rsp.body, b'')
-        self.assertEqual(rsp.headers['Location'], 'http://localhost/broken')
+        self.assertEqual(rsp.body, b"")
+        self.assertEqual(rsp.headers["Location"], "http://localhost/broken")
 
     def test_redirect_with_callable_not_permanent(self):
-        req = webapp2.Request.blank('/redirect-me4')
+        req = webapp2.Request.blank("/redirect-me4")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 302)
-        self.assertEqual(rsp.body, b'')
-        self.assertEqual(rsp.headers['Location'], 'http://localhost/methods')
+        self.assertEqual(rsp.body, b"")
+        self.assertEqual(rsp.headers["Location"], "http://localhost/methods")
 
     def test_redirect_to(self):
-        req = webapp2.Request.blank('/redirect-me5')
+        req = webapp2.Request.blank("/redirect-me5")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 302)
-        self.assertEqual(rsp.body, b'')
+        self.assertEqual(rsp.body, b"")
         self.assertEqual(
-            rsp.headers['Location'],
-            'http://localhost/2010/07/test?foo=bar#my-anchor'
+            rsp.headers["Location"], "http://localhost/2010/07/test?foo=bar#my-anchor"
         )
 
     def test_redirect_abort(self):
-        req = webapp2.Request.blank('/redirect-me6')
+        req = webapp2.Request.blank("/redirect-me6")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 302)
         self.assertEqual(
             rsp.body,
             b"""302 Moved Temporarily\n\n"""
             b"""The resource was found at http://localhost/somewhere; """
-            b"""you should be redirected automatically.  """
+            b"""you should be redirected automatically.  """,
         )
-        self.assertEqual(rsp.headers['Location'], 'http://localhost/somewhere')
-        self.assertEqual(rsp.headers['Set-Cookie'], 'a=b')
+        self.assertEqual(rsp.headers["Location"], "http://localhost/somewhere")
+        self.assertEqual(rsp.headers["Set-Cookie"], "a=b")
 
     def test_run(self):
-        os.environ['REQUEST_METHOD'] = 'GET'
+        os.environ["REQUEST_METHOD"] = "GET"
 
-        with mock.patch('webapp2.handlers.sys.stdin') as patched_stdin:
-            with mock.patch('webapp2.handlers.sys.stdout') as patched_stdout:
-                patched_stdin.return_value = getattr(
-                    sys.stdin,
-                    'buffer',
-                    sys.stdin
-                )
-                patched_stdout.return_value = getattr(
-                    sys.stdout,
-                    'buffer',
-                    sys.stdout
-                )
+        with mock.patch("webapp2.handlers.sys.stdin") as patched_stdin:
+            with mock.patch("webapp2.handlers.sys.stdout") as patched_stdout:
+                patched_stdin.return_value = getattr(sys.stdin, "buffer", sys.stdin)
+                patched_stdout.return_value = getattr(sys.stdout, "buffer", sys.stdout)
 
                 app.run()
         # self.assertEqual(sys.stdout.read(), DEFAULT_RESPONSE)
 
     def test_run_bare(self):
-        os.environ['REQUEST_METHOD'] = 'GET'
+        os.environ["REQUEST_METHOD"] = "GET"
 
-        with mock.patch('webapp2.handlers.sys.stdin') as patched_stdin:
-            with mock.patch('webapp2.handlers.sys.stdout') as patched_stdout:
-                patched_stdin.return_value = getattr(
-                    sys.stdin,
-                    'buffer',
-                    sys.stdin
-                )
-                patched_stdout.return_value = getattr(
-                    sys.stdout,
-                    'buffer',
-                    sys.stdout
-                )
+        with mock.patch("webapp2.handlers.sys.stdin") as patched_stdin:
+            with mock.patch("webapp2.handlers.sys.stdout") as patched_stdout:
+                patched_stdin.return_value = getattr(sys.stdin, "buffer", sys.stdin)
+                patched_stdout.return_value = getattr(sys.stdout, "buffer", sys.stdout)
 
                 app.run(bare=True)
         # self.assertEqual(sys.stdout.read(), DEFAULT_RESPONSE)
@@ -423,28 +422,20 @@ class TestHandler(BaseTestCase):
     def test_run_debug(self):
         debug = app.debug
         app.debug = True
-        os.environ['REQUEST_METHOD'] = 'GET'
-        os.environ['PATH_INFO'] = '/'
+        os.environ["REQUEST_METHOD"] = "GET"
+        os.environ["PATH_INFO"] = "/"
 
-        with mock.patch('webapp2.handlers.sys.stdin') as patched_stdin:
-            with mock.patch('webapp2.handlers.sys.stdout') as patched_stdout:
-                patched_stdin.return_value = getattr(
-                    sys.stdin,
-                    'buffer',
-                    sys.stdin
-                )
-                patched_stdout.return_value = getattr(
-                    sys.stdout,
-                    'buffer',
-                    sys.stdout
-                )
+        with mock.patch("webapp2.handlers.sys.stdin") as patched_stdin:
+            with mock.patch("webapp2.handlers.sys.stdout") as patched_stdout:
+                patched_stdin.return_value = getattr(sys.stdin, "buffer", sys.stdin)
+                patched_stdout.return_value = getattr(sys.stdout, "buffer", sys.stdout)
 
                 app.run(bare=True)
         # self.assertEqual(sys.stdout.read(), DEFAULT_RESPONSE)
 
         app.debug = debug
 
-    '''
+    """
     def test_get_valid_methods(self):
         req = webapp2.Request.blank('http://localhost:80/')
         req.app = app
@@ -468,15 +459,15 @@ class TestHandler(BaseTestCase):
             handler.get_valid_methods().sort(),
             query_methods.sort()
         )
-    '''
+    """
 
     def test_uri_for(self):
         class Handler(webapp2.RequestHandler):
             def get(self, *args, **kwargs):
                 pass
 
-        req = webapp2.Request.blank('http://localhost:80/')
-        req.route = webapp2.Route('')
+        req = webapp2.Request.blank("http://localhost:80/")
+        req.route = webapp2.Route("")
         req.route_args = tuple()
         req.route_kwargs = {}
         req.app = app
@@ -485,134 +476,135 @@ class TestHandler(BaseTestCase):
         handler.app = app
 
         for func in (handler.uri_for,):
-            self.assertEqual(func('home'), '/')
-            self.assertEqual(func('home', foo='bar'), '/?foo=bar')
-            self.assertEqual(func('home', _fragment='my-anchor', foo='bar'),
-                             '/?foo=bar#my-anchor')
-            self.assertEqual(func('home', _fragment='my-anchor'),
-                             '/#my-anchor')
-            self.assertEqual(func('home', _full=True),
-                             'http://localhost:80/')
-            self.assertEqual(func('home', _full=True, _fragment='my-anchor'),
-                             'http://localhost:80/#my-anchor')
-            self.assertEqual(func('home', _scheme='https'),
-                             'https://localhost:80/')
-            self.assertEqual(func('home', _scheme='https', _full=False),
-                             'https://localhost:80/')
-            self.assertEqual(func('home',
-                                  _scheme='https',
-                                  _fragment='my-anchor'),
-                             'https://localhost:80/#my-anchor')
-
-            self.assertEqual(func('methods'), '/methods')
-            self.assertEqual(func('methods', foo='bar'), '/methods?foo=bar')
-            self.assertEqual(func('methods',
-                                  _fragment='my-anchor', foo='bar'),
-                             '/methods?foo=bar#my-anchor')
+            self.assertEqual(func("home"), "/")
+            self.assertEqual(func("home", foo="bar"), "/?foo=bar")
             self.assertEqual(
-                func('methods', _fragment='my-anchor'),
-                '/methods#my-anchor'
+                func("home", _fragment="my-anchor", foo="bar"), "/?foo=bar#my-anchor"
+            )
+            self.assertEqual(func("home", _fragment="my-anchor"), "/#my-anchor")
+            self.assertEqual(func("home", _full=True), "http://localhost:80/")
+            self.assertEqual(
+                func("home", _full=True, _fragment="my-anchor"),
+                "http://localhost:80/#my-anchor",
+            )
+            self.assertEqual(func("home", _scheme="https"), "https://localhost:80/")
+            self.assertEqual(
+                func("home", _scheme="https", _full=False), "https://localhost:80/"
             )
             self.assertEqual(
-                func('methods', _full=True),
-                'http://localhost:80/methods'
-            )
-            self.assertEqual(
-                func('methods', _full=True, _fragment='my-anchor'),
-                'http://localhost:80/methods#my-anchor'
-            )
-            self.assertEqual(
-                func('methods', _scheme='https'),
-                'https://localhost:80/methods'
-            )
-            self.assertEqual(func('methods', _scheme='https', _full=False),
-                             'https://localhost:80/methods')
-            self.assertEqual(
-                func('methods', _scheme='https', _fragment='my-anchor'),
-                'https://localhost:80/methods#my-anchor'
+                func("home", _scheme="https", _fragment="my-anchor"),
+                "https://localhost:80/#my-anchor",
             )
 
+            self.assertEqual(func("methods"), "/methods")
+            self.assertEqual(func("methods", foo="bar"), "/methods?foo=bar")
             self.assertEqual(
-                func('route-test', year='2010', month='0', name='test'),
-                '/2010/0/test'
+                func("methods", _fragment="my-anchor", foo="bar"),
+                "/methods?foo=bar#my-anchor",
             )
             self.assertEqual(
-                func('route-test', year='2010', month='07', name='test'),
-                '/2010/07/test'
+                func("methods", _fragment="my-anchor"), "/methods#my-anchor"
+            )
+            self.assertEqual(func("methods", _full=True), "http://localhost:80/methods")
+            self.assertEqual(
+                func("methods", _full=True, _fragment="my-anchor"),
+                "http://localhost:80/methods#my-anchor",
             )
             self.assertEqual(
-                func('route-test',
-                     year='2010', month='07', name='test', foo='bar'),
-                '/2010/07/test?foo=bar'
+                func("methods", _scheme="https"), "https://localhost:80/methods"
             )
             self.assertEqual(
-                func('route-test',
-                     _fragment='my-anchor',
-                     year='2010',
-                     month='07',
-                     name='test',
-                     foo='bar'),
-                '/2010/07/test?foo=bar#my-anchor'
+                func("methods", _scheme="https", _full=False),
+                "https://localhost:80/methods",
             )
             self.assertEqual(
-                func('route-test',
-                     _fragment='my-anchor',
-                     year='2010',
-                     month='07',
-                     name='test'),
-                '/2010/07/test#my-anchor'
+                func("methods", _scheme="https", _fragment="my-anchor"),
+                "https://localhost:80/methods#my-anchor",
+            )
+
+            self.assertEqual(
+                func("route-test", year="2010", month="0", name="test"), "/2010/0/test"
             )
             self.assertEqual(
-                func('route-test',
-                     _full=True,
-                     year='2010',
-                     month='07',
-                     name='test'),
-                'http://localhost:80/2010/07/test'
+                func("route-test", year="2010", month="07", name="test"),
+                "/2010/07/test",
             )
             self.assertEqual(
-                func('route-test',
-                     _full=True,
-                     _fragment='my-anchor',
-                     year='2010',
-                     month='07',
-                     name='test'),
-                'http://localhost:80/2010/07/test#my-anchor'
+                func("route-test", year="2010", month="07", name="test", foo="bar"),
+                "/2010/07/test?foo=bar",
             )
             self.assertEqual(
-                func('route-test',
-                     _scheme='https',
-                     year='2010',
-                     month='07',
-                     name='test'),
-                'https://localhost:80/2010/07/test'
+                func(
+                    "route-test",
+                    _fragment="my-anchor",
+                    year="2010",
+                    month="07",
+                    name="test",
+                    foo="bar",
+                ),
+                "/2010/07/test?foo=bar#my-anchor",
             )
             self.assertEqual(
-                func('route-test',
-                     _scheme='https',
-                     _full=False,
-                     year='2010',
-                     month='07',
-                     name='test'),
-                'https://localhost:80/2010/07/test'
+                func(
+                    "route-test",
+                    _fragment="my-anchor",
+                    year="2010",
+                    month="07",
+                    name="test",
+                ),
+                "/2010/07/test#my-anchor",
             )
             self.assertEqual(
-                func('route-test',
-                     _scheme='https',
-                     _fragment='my-anchor',
-                     year='2010',
-                     month='07',
-                     name='test'),
-                'https://localhost:80/2010/07/test#my-anchor'
+                func("route-test", _full=True, year="2010", month="07", name="test"),
+                "http://localhost:80/2010/07/test",
+            )
+            self.assertEqual(
+                func(
+                    "route-test",
+                    _full=True,
+                    _fragment="my-anchor",
+                    year="2010",
+                    month="07",
+                    name="test",
+                ),
+                "http://localhost:80/2010/07/test#my-anchor",
+            )
+            self.assertEqual(
+                func(
+                    "route-test", _scheme="https", year="2010", month="07", name="test"
+                ),
+                "https://localhost:80/2010/07/test",
+            )
+            self.assertEqual(
+                func(
+                    "route-test",
+                    _scheme="https",
+                    _full=False,
+                    year="2010",
+                    month="07",
+                    name="test",
+                ),
+                "https://localhost:80/2010/07/test",
+            )
+            self.assertEqual(
+                func(
+                    "route-test",
+                    _scheme="https",
+                    _fragment="my-anchor",
+                    year="2010",
+                    month="07",
+                    name="test",
+                ),
+                "https://localhost:80/2010/07/test#my-anchor",
             )
 
     def test_extra_request_methods(self):
         allowed_methods_backup = app.allowed_methods
-        webdav_methods = ('VERSION-CONTROL', 'UNLOCK', 'PROPFIND')
+        webdav_methods = ("VERSION-CONTROL", "UNLOCK", "PROPFIND")
 
         for method in webdav_methods:
             # It is still not possible to use WebDav methods...
-            req = webapp2.Request.blank('/webdav')
+            req = webapp2.Request.blank("/webdav")
             req.method = method
             rsp = req.get_response(app)
             self.assertEqual(rsp.status_int, 501)
@@ -626,11 +618,11 @@ class TestHandler(BaseTestCase):
 
         # Now we can use WebDav methods...
         for method in webdav_methods:
-            req = webapp2.Request.blank('/webdav')
+            req = webapp2.Request.blank("/webdav")
             req.method = method
             rsp = req.get_response(app)
             self.assertEqual(rsp.status_int, 200)
-            self.assertEqual(rsp.body, webapp2._to_utf8('Method: %s' % method))
+            self.assertEqual(rsp.body, webapp2._to_utf8("Method: %s" % method))
 
         # Restore initial values.
         app.allowed_methods = allowed_methods_backup
@@ -644,26 +636,26 @@ class TestHandler(BaseTestCase):
             handler.app = req.app = app
             return req, handler
 
-        req, handler = get_req('http://localhost:80/')
-        uri = webapp2.uri_for('escape', name='with space')
+        req, handler = get_req("http://localhost:80/")
+        uri = webapp2.uri_for("escape", name="with space")
         req, handler = get_req(uri)
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'with space')
+        self.assertEqual(rsp.body, b"with space")
 
-        req, handler = get_req('http://localhost:80/')
-        uri = webapp2.uri_for('escape', name='with+plus')
+        req, handler = get_req("http://localhost:80/")
+        uri = webapp2.uri_for("escape", name="with+plus")
         req, handler = get_req(uri)
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'with plus')
+        self.assertEqual(rsp.body, b"with plus")
 
-        req, handler = get_req('http://localhost:80/')
-        uri = webapp2.uri_for('escape', name='with/slash')
+        req, handler = get_req("http://localhost:80/")
+        uri = webapp2.uri_for("escape", name="with/slash")
         req, handler = get_req(uri)
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'with/slash')
+        self.assertEqual(rsp.body, b"with/slash")
 
     def test_handle_exception_with_error(self):
         class HomeHandler(webapp2.RequestHandler):
@@ -673,12 +665,15 @@ class TestHandler(BaseTestCase):
         def handle_exception(request, response, exception):
             raise ValueError()
 
-        app = webapp2.WSGIApplication([
-            webapp2.Route('/', HomeHandler, name='home'),
-        ], debug=False)
+        app = webapp2.WSGIApplication(
+            [
+                webapp2.Route("/", HomeHandler, name="home"),
+            ],
+            debug=False,
+        )
         app.error_handlers[500] = handle_exception
 
-        req = webapp2.Request.blank('/')
+        req = webapp2.Request.blank("/")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 500)
 
@@ -690,117 +685,128 @@ class TestHandler(BaseTestCase):
         def handle_exception(request, response, exception):
             raise ValueError()
 
-        app = webapp2.WSGIApplication([
-            webapp2.Route('/', HomeHandler, name='home'),
-        ], debug=True)
+        app = webapp2.WSGIApplication(
+            [
+                webapp2.Route("/", HomeHandler, name="home"),
+            ],
+            debug=True,
+        )
         app.error_handlers[500] = handle_exception
 
-        req = webapp2.Request.blank('/')
+        req = webapp2.Request.blank("/")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 500)
 
     def test_function_handler(self):
         def my_view(request, *args, **kwargs):
-            return webapp2.Response('Hello, function world!')
+            return webapp2.Response("Hello, function world!")
 
         def other_view(request, *args, **kwargs):
-            return webapp2.Response('Hello again, function world!')
+            return webapp2.Response("Hello again, function world!")
 
         def one_more_view(request, *args, **kwargs):
             self.assertEqual(args, ())
-            self.assertEqual(kwargs, {'foo': 'bar'})
-            return webapp2.Response('Hello you too!')
+            self.assertEqual(kwargs, {"foo": "bar"})
+            return webapp2.Response("Hello you too!")
 
-        app = webapp2.WSGIApplication([
-            webapp2.Route('/', my_view),
-            webapp2.Route('/other', other_view),
-            webapp2.Route('/one-more/<foo>', one_more_view)
-        ])
+        app = webapp2.WSGIApplication(
+            [
+                webapp2.Route("/", my_view),
+                webapp2.Route("/other", other_view),
+                webapp2.Route("/one-more/<foo>", one_more_view),
+            ]
+        )
 
-        req = webapp2.Request.blank('/')
+        req = webapp2.Request.blank("/")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'Hello, function world!')
+        self.assertEqual(rsp.body, b"Hello, function world!")
 
         # Twice to test factory.
-        req = webapp2.Request.blank('/')
+        req = webapp2.Request.blank("/")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'Hello, function world!')
+        self.assertEqual(rsp.body, b"Hello, function world!")
 
-        req = webapp2.Request.blank('/other')
+        req = webapp2.Request.blank("/other")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'Hello again, function world!')
+        self.assertEqual(rsp.body, b"Hello again, function world!")
 
         # Twice to test factory.
-        req = webapp2.Request.blank('/other')
+        req = webapp2.Request.blank("/other")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'Hello again, function world!')
+        self.assertEqual(rsp.body, b"Hello again, function world!")
 
-        req = webapp2.Request.blank('/one-more/bar')
+        req = webapp2.Request.blank("/one-more/bar")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'Hello you too!')
+        self.assertEqual(rsp.body, b"Hello you too!")
 
     def test_custom_method(self):
         class MyHandler(webapp2.RequestHandler):
             def my_method(self):
-                self.response.out.write('Hello, custom method world!')
+                self.response.out.write("Hello, custom method world!")
 
             def my_other_method(self):
-                self.response.out.write('Hello again, custom method world!')
+                self.response.out.write("Hello again, custom method world!")
 
-        app = webapp2.WSGIApplication([
-            webapp2.Route('/', MyHandler, handler_method='my_method'),
-            webapp2.Route('/other', MyHandler,
-                          handler_method='my_other_method'),
-        ])
+        app = webapp2.WSGIApplication(
+            [
+                webapp2.Route("/", MyHandler, handler_method="my_method"),
+                webapp2.Route("/other", MyHandler, handler_method="my_other_method"),
+            ]
+        )
 
-        req = webapp2.Request.blank('/')
+        req = webapp2.Request.blank("/")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'Hello, custom method world!')
+        self.assertEqual(rsp.body, b"Hello, custom method world!")
 
-        req = webapp2.Request.blank('/other')
+        req = webapp2.Request.blank("/other")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'Hello again, custom method world!')
+        self.assertEqual(rsp.body, b"Hello again, custom method world!")
 
     def test_custom_method_with_string(self):
-        handler = 'tests.resources.handlers.CustomMethodHandler:custom_method'
+        handler = "tests.resources.handlers.CustomMethodHandler:custom_method"
 
-        app = webapp2.WSGIApplication([
-            webapp2.Route('/', handler=handler),
-            webapp2.Route('/bleh', handler=handler),
-        ])
+        app = webapp2.WSGIApplication(
+            [
+                webapp2.Route("/", handler=handler),
+                webapp2.Route("/bleh", handler=handler),
+            ]
+        )
 
-        req = webapp2.Request.blank('/')
+        req = webapp2.Request.blank("/")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'I am a custom method.')
+        self.assertEqual(rsp.body, b"I am a custom method.")
 
-        req = webapp2.Request.blank('/bleh')
+        req = webapp2.Request.blank("/bleh")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'I am a custom method.')
+        self.assertEqual(rsp.body, b"I am a custom method.")
 
         self.assertRaises(
-            ValueError, webapp2.Route, '/',
+            ValueError,
+            webapp2.Route,
+            "/",
             handler=handler,
-            handler_method='custom_method'
+            handler_method="custom_method",
         )
 
     def test_factory_1(self):
         app.debug = True
-        rsp = app.get_response('/bare')
+        rsp = app.get_response("/bare")
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'I am not a RequestHandler but I work.')
+        self.assertEqual(rsp.body, b"I am not a RequestHandler but I work.")
         app.debug = False
 
     def test_factory_2(self):
         """Very crazy stuff. Please ignore it."""
+
         class MyHandler:
             def __init__(self, request, response):
                 self.request = request
@@ -821,50 +827,56 @@ class TestHandler(BaseTestCase):
                 return self
 
             def dispatch(self):
-                self.response.write('hello')
+                self.response.write("hello")
 
-        app = webapp2.WSGIApplication([
-            webapp2.Route('/', handler=MyHandler),
-        ])
+        app = webapp2.WSGIApplication(
+            [
+                webapp2.Route("/", handler=MyHandler),
+            ]
+        )
 
-        req = webapp2.Request.blank('/')
+        req = webapp2.Request.blank("/")
         rsp = req.get_response(app)
         self.assertEqual(rsp.status_int, 200)
-        self.assertEqual(rsp.body, b'hello')
+        self.assertEqual(rsp.body, b"hello")
 
     def test_encoding(self):
         class PostHandler(webapp2.RequestHandler):
             def post(self):
-                foo = self.request.POST['foo']
+                foo = self.request.POST["foo"]
                 if not foo:
-                    foo = 'empty'
+                    foo = "empty"
 
                 self.response.write(foo)
 
-        app = webapp2.WSGIApplication([
-            webapp2.Route('/', PostHandler),
-        ], debug=True)
+        app = webapp2.WSGIApplication(
+            [
+                webapp2.Route("/", PostHandler),
+            ],
+            debug=True,
+        )
 
         # foo with umlauts in the vowels.
-        value = b'f\xc3\xb6\xc3\xb6'
+        value = b"f\xc3\xb6\xc3\xb6"
 
         rsp = app.get_response(
-            '/',
-            POST={'foo': value},
-            headers=[('Content-Type',
-                      'application/x-www-form-urlencoded; charset=utf-8')]
+            "/",
+            POST={"foo": value},
+            headers=[
+                ("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+            ],
         )
-        self.assertEqual(rsp.unicode_body, 'föö')
+        self.assertEqual(rsp.unicode_body, "föö")
         self.assertEqual(rsp.body, value)
 
         rsp = app.get_response(
-            '/',
-            POST={'foo': value},
-            headers=[('Content-Type', 'application/x-www-form-urlencoded')]
+            "/",
+            POST={"foo": value},
+            headers=[("Content-Type", "application/x-www-form-urlencoded")],
         )
-        self.assertEqual(rsp.unicode_body, 'föö')
+        self.assertEqual(rsp.unicode_body, "föö")
         self.assertEqual(rsp.body, value)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

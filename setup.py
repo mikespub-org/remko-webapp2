@@ -17,49 +17,42 @@ from codecs import open
 from setuptools import setup
 
 
-LONG_DESCRIPTION = open('README.rst', encoding='utf-8').read()
+LONG_DESCRIPTION = open("README.rst", encoding="utf-8").read()
 
-REQUIREMENTS = [
-    'webob>=1.2.0',
-    'six>=1.10.0'
-]
+REQUIREMENTS = ["webob>=1.2.0", "six>=1.10.0"]
 
-EXTRA_REQUIREMENTS = {
-    'jinja2>=2.4',
-    'Babel>=2.2',
-    'pytz>=2015.7'
-}
+EXTRA_REQUIREMENTS = {"jinja2>=2.4", "Babel>=2.2", "pytz>=2015.7"}
 
 setup(
-    name='webapp2',
-    version='3.0.0b1',
-    license='Apache Software License',
-    url='http://webapp2.readthedocs.org',
+    name="webapp2",
+    version="3.0.0b1",
+    license="Apache Software License",
+    url="http://webapp2.readthedocs.org",
     description="Taking Google App Engine's webapp to the next level!",
     long_description=LONG_DESCRIPTION,
-    author='The Webapp2 Maintainers',
-    author_email='webapp2-maintainers@googlegroups.com',
+    author="The Webapp2 Maintainers",
+    author_email="webapp2-maintainers@googlegroups.com",
     zip_safe=False,
-    platforms='any',
+    platforms="any",
     py_modules=[
-        'webapp2',
+        "webapp2",
     ],
     packages=[
-        'webapp2_extras',
-        'webapp2_extras.appengine',
-        'webapp2_extras.appengine.auth',
+        "webapp2_extras",
+        "webapp2_extras.appengine",
+        "webapp2_extras.appengine.auth",
     ],
     include_package_data=True,
     install_requires=REQUIREMENTS,
-    extras_require={'extras': EXTRA_REQUIREMENTS},
+    extras_require={"extras": EXTRA_REQUIREMENTS},
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Environment :: Web Environment',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-    ]
+        "Development Status :: 5 - Production/Stable",
+        "Environment :: Web Environment",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+    ],
 )

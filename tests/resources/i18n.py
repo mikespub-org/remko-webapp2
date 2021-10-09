@@ -1,9 +1,6 @@
 from webapp2_extras import i18n
 
-default_config = {
-    'locale': 'en_US',
-    'timezone': 'America/Chicago'
-}
+default_config = {"locale": "en_US", "timezone": "America/Chicago"}
 
 
 def locale_selector(store, request):
