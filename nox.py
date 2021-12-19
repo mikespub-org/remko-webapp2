@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import nox
 import os
 from tempfile import gettempdir
+
+import nox
 
 
 def session_lint(session):

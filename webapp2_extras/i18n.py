@@ -23,11 +23,9 @@ Several ideas borrowed from tipfy.i18n and Flask-Babel.
 import datetime
 import gettext as gettext_stdlib
 
-from babel import dates
-from babel import numbers
-from babel import support
 import pytz
-import six
+from babel import dates, numbers, support
+
 import webapp2
 
 try:

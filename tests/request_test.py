@@ -15,8 +15,10 @@
 import unittest
 
 import six
-from tests.test_base import BaseTestCase
+
 import webapp2
+
+from tests.test_base import BaseTestCase
 
 
 def _norm_req(s):
@@ -128,8 +130,8 @@ class TestRequest(BaseTestCase):
 
     def test_cookie_unicode(self):
         import base64
-        from six.moves.urllib.parse import unquote
-        from six.moves.urllib.parse import quote
+
+        from six.moves.urllib.parse import quote, unquote
 
         # With base64 ---------------------------------------------------------
 

@@ -21,7 +21,6 @@ Utilities for authentication and authorization.
 import logging
 import time
 
-import six
 import webapp2
 from webapp2_extras import sessions
 
@@ -511,7 +510,7 @@ class Auth:
         token_ts=None,
         cache_ts=None,
         remember=False,
-        **session_args
+        **session_args,
     ):
         """Saves a user in the session.
 

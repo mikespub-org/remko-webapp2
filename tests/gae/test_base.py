@@ -15,8 +15,8 @@
 import unittest
 
 from google.appengine.ext import testbed
-from google.appengine.ext.ndb import model
-from google.appengine.ext.ndb import tasklets
+from google.appengine.ext.ndb import model, tasklets
+
 import webapp2
 
 

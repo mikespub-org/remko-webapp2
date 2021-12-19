@@ -26,7 +26,6 @@ import math
 import random
 import string
 
-import six
 import webapp2
 
 _rng = random.SystemRandom()

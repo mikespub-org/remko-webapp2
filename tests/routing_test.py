@@ -15,9 +15,10 @@
 import random
 import unittest
 
-from tests.test_base import BaseTestCase
 import webapp2
 from webapp2 import BaseRoute, Request, Route, Router
+
+from tests.test_base import BaseTestCase
 
 
 class TestRoute(BaseTestCase):

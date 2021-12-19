@@ -15,7 +15,6 @@
 
 import webapp2
 
-
 NEW_BASE_URL = "https://webapp2.readthedocs.org/"
 
 

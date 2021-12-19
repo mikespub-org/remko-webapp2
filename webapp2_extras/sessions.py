@@ -20,10 +20,8 @@ Lightweight but flexible session support for webapp2.
 """
 import re
 
-import six
 import webapp2
-from webapp2_extras import securecookie
-from webapp2_extras import security
+from webapp2_extras import securecookie, security
 
 #: Default configuration values for this module. Keys are:
 #:

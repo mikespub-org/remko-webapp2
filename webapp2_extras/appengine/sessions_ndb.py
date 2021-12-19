@@ -20,6 +20,7 @@ Extended sessions stored in datastore using the ndb library.
 """
 
 from google.appengine.api import memcache
+
 from webapp2_extras import sessions
 
 try:

@@ -13,11 +13,12 @@
 # limitations under the License.
 
 from google.appengine.api import memcache
-from tests.gae import test_base
+
 import webapp2
 from webapp2_extras import sessions
 from webapp2_extras.appengine import sessions_ndb
 
+from tests.gae import test_base
 
 app = webapp2.WSGIApplication(
     config={

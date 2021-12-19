@@ -22,9 +22,7 @@ Learn more about Mako: http://www.makotemplates.org/
 """
 import importlib
 
-import six
 import webapp2
-
 
 lookup = importlib.import_module("mako.lookup")
 

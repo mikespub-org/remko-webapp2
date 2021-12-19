@@ -34,11 +34,9 @@ except ImportError:  # pragma: no cover
         # catch all, py.* fails with so many different errors.
         get_current_greenlet = int
 try:
-    from six.moves._thread import allocate_lock
-    from six.moves._thread import get_ident as get_current_thread
+    from six.moves._thread import allocate_lock, get_ident as get_current_thread
 except ImportError:  # pragma: no cover
-    from six.moves._dummy_thread import allocate_lock
-    from six.moves._dummy_thread import get_ident as get_current_thread
+    from six.moves._dummy_thread import allocate_lock, get_ident as get_current_thread
 
 # get the best ident function.  if greenlets are not installed we can
 # safely just use the builtin thread function and save a python methodcall
@@ -293,16 +291,16 @@ class LocalProxy:
         return self._get_current_object().__truediv__(other)
 
     def __neg__(self):
-        return -(self._get_current_object())
+        return -self._get_current_object()
 
     def __pos__(self):
-        return +(self._get_current_object())
+        return +self._get_current_object()
 
     def __abs__(self):
         return abs(self._get_current_object())
 
     def __invert__(self):
-        return ~(self._get_current_object())
+        return ~self._get_current_object()
 
     def __complex__(self):
         return complex(self._get_current_object())

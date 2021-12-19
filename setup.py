@@ -16,7 +16,6 @@ from codecs import open
 
 from setuptools import setup
 
-
 LONG_DESCRIPTION = open("README.rst", encoding="utf-8").read()
 
 REQUIREMENTS = ["webob>=1.2.0", "six>=1.10.0"]

@@ -9,11 +9,11 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-from unittest import mock
 import os
 import sys
-from pkg_resources import get_distribution
+from unittest import mock
 
+from pkg_resources import get_distribution
 
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 

@@ -18,10 +18,10 @@ webapp2_extras.routes
 
 Extra route classes for webapp2.
 """
-import six
 from six.moves.urllib import parse
-import webapp2
 from webob import exc
+
+import webapp2
 
 
 class MultiRoute:

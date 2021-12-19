@@ -15,7 +15,6 @@
 import re
 import unittest
 
-import six
 from webapp2_extras import security
 
 

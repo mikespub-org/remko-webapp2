@@ -14,13 +14,16 @@
 
 import unittest
 
-from tests.test_base import BaseTestCase
 import webapp2
-from webapp2_extras.routes import DomainRoute
-from webapp2_extras.routes import HandlerPrefixRoute
-from webapp2_extras.routes import NamePrefixRoute
-from webapp2_extras.routes import PathPrefixRoute
-from webapp2_extras.routes import RedirectRoute
+from webapp2_extras.routes import (
+    DomainRoute,
+    HandlerPrefixRoute,
+    NamePrefixRoute,
+    PathPrefixRoute,
+    RedirectRoute,
+)
+
+from tests.test_base import BaseTestCase
 
 
 class HomeHandler(webapp2.RequestHandler):

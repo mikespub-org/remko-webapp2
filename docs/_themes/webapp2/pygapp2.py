@@ -1,5 +1,15 @@
 from pygments.style import Style
-from pygments.token import *
+from pygments.token import (
+    Comment,
+    Error,
+    Generic,
+    Keyword,
+    Name,
+    Number,
+    Operator,
+    String,
+    Whitespace,
+)
 
 
 class pygapp2(Style):

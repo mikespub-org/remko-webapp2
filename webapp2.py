@@ -23,7 +23,6 @@ Taking Google App Engine's webapp to the next level!
 """
 
 import cgi
-from collections import OrderedDict
 import inspect
 import logging
 import os
@@ -31,30 +30,26 @@ import re
 import sys
 import threading
 import traceback
+from collections import OrderedDict
 from wsgiref import handlers
 
 import six
-from six.moves import cStringIO
-from six.moves.urllib.parse import quote
-from six.moves.urllib.parse import unquote
-from six.moves.urllib.parse import urlencode
-from six.moves.urllib.parse import urljoin
-from six.moves.urllib.parse import urlunsplit
 import webob
+from six.moves import cStringIO
+from six.moves.urllib.parse import quote, unquote, urlencode, urljoin, urlunsplit
 from webob import exc
-
 
 _webapp = _webapp_util = _local = None
 
 
 try:  # pragma: no cover
     # WebOb < 1.0 (App Engine Python 2.5).
-    from webob.statusreasons import status_reasons
     from webob.headerdict import HeaderDict as BaseResponseHeaders
+    from webob.statusreasons import status_reasons
 except ImportError:  # pragma: no cover
     # WebOb >= 1.0.
-    from webob.util import status_reasons
     from webob.headers import ResponseHeaders as BaseResponseHeaders
+    from webob.util import status_reasons
 
 
 try:  # pragma no cover

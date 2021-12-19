@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from google.appengine.ext import webapp
 import test_base
+from google.appengine.ext import webapp
+
 import webapp2
 
 

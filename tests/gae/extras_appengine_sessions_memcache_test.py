@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tests.gae import test_base
 import webapp2
 from webapp2_extras import sessions
 
+from tests.gae import test_base
 
 app = webapp2.WSGIApplication(
     config={

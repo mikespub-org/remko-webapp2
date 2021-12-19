@@ -24,9 +24,9 @@ import logging
 import time
 
 from six.moves import http_cookies
+
 import webapp2
-from webapp2_extras import json
-from webapp2_extras import security
+from webapp2_extras import json, security
 
 
 class SecureCookieSerializer:

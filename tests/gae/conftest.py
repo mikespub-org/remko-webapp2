@@ -15,8 +15,8 @@
 import os
 import sys
 
-from gcp_devrel.testing import appengine
 import six
+from gcp_devrel.testing import appengine
 
 
 def pytest_configure():

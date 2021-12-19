@@ -19,6 +19,7 @@ webapp2_extras.appengine.sessions_memcache
 Extended sessions stored in memcache.
 """
 from google.appengine.api import memcache
+
 from webapp2_extras import sessions
 
 

@@ -13,11 +13,12 @@
 # limitations under the License.
 
 import datetime
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
-from babel.numbers import NumberFormatError
 import pytz
+from babel.numbers import NumberFormatError
+
 import webapp2
 from webapp2_extras import i18n
 

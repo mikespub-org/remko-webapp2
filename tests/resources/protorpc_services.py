@@ -1,5 +1,4 @@
-from protorpc import messages
-from protorpc import remote
+from protorpc import messages, remote
 
 
 class BonjourRequest(messages.Message):

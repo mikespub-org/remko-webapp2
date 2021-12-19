@@ -18,7 +18,6 @@ import unittest
 import webapp2
 from webapp2_extras import mako
 
-
 current_dir = os.path.abspath(os.path.dirname(__file__))
 template_path = os.path.join(current_dir, "resources", "mako_templates")
 

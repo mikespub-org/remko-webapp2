@@ -13,11 +13,12 @@
 # limitations under the License.
 
 from google.appengine.ext.ndb import model
-from tests.gae import test_base
+
 import webapp2
-from webapp2_extras import auth
-from webapp2_extras import sessions
+from webapp2_extras import auth, sessions
 from webapp2_extras.appengine.auth import models
+
+from tests.gae import test_base
 
 
 class TestAuth(test_base.BaseTestCase):

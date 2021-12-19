@@ -1,20 +1,4 @@
-from jinja2.runtime import (
-    LoopContext,
-    Macro,
-    Markup,
-    Namespace,
-    TemplateNotFound,
-    TemplateReference,
-    TemplateRuntimeError,
-    Undefined,
-    concat,
-    escape,
-    identity,
-    internalcode,
-    markup_join,
-    missing,
-    str_join,
-)
+from jinja2.runtime import Undefined, missing
 
 name = "template1.html"
 
@@ -26,7 +10,6 @@ def root(context, missing=missing):
     if 0:
         yield None
     l_0_message = resolve("message")
-    pass
     yield str(undefined(name="message") if l_0_message is missing else l_0_message)
 
 

@@ -15,8 +15,10 @@
 import unittest
 
 import six
-from tests import test_base
+
 import webapp2
+
+from tests import test_base
 
 
 class NoStringOrUnicodeConversion:
