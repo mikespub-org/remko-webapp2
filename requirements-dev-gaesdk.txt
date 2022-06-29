@@ -5,7 +5,7 @@ Jinja2==3.1.2
 # that were used with release 2.5.2, except for babel.
 six==1.16.0
 Mako==1.2.0
-Babel==2.10.1
+Babel==2.10.3
 gaepytz==2011h
 # Test dependencies.
 pytest==7.1.2
