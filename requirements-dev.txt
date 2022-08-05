@@ -1,7 +1,7 @@
 # These dependencies match App Engine SDK versions.
 WebOb==1.8.7
 Jinja2==3.1.2
-Mako==1.2.0
+Mako==1.2.1
 Babel==2.10.3
 pytz==2022.1
 # These are test dependencies
