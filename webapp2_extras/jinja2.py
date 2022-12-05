@@ -58,10 +58,11 @@ default_config = {
     "force_compiled": False,
     "environment_args": {
         "autoescape": True,
-        "extensions": [
-            "jinja2.ext.autoescape",
-            "jinja2.ext.with_",
-        ],
+        "extensions": [],
+        # "extensions": [
+        #     "jinja2.ext.autoescape",
+        #     "jinja2.ext.with_",
+        # ],
     },
     "globals": None,
     "filters": None,
