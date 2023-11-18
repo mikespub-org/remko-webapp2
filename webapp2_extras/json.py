@@ -20,8 +20,7 @@ JSON helpers for webapp2.
 """
 import base64
 import importlib
-
-from six.moves.urllib import parse
+from urllib import parse
 
 import webapp2
 

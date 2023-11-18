@@ -31,12 +31,12 @@ import sys
 import threading
 import traceback
 from collections import OrderedDict
+from urllib.parse import quote, unquote, urlencode, urljoin, urlunsplit
 from wsgiref import handlers
 
 import six
 import webob
 from six.moves import cStringIO
-from six.moves.urllib.parse import quote, unquote, urlencode, urljoin, urlunsplit
 from webob import exc
 
 _webapp = _webapp_util = _local = None

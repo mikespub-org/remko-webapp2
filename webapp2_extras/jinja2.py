@@ -148,8 +148,8 @@ class Jinja2:
             from webapp2_extras import i18n
 
             env.install_gettext_callables(
-                lambda x: i18n.gettext(x),
-                lambda s, p, n: i18n.ngettext(s, p, n),
+                i18n.gettext,
+                i18n.ngettext,
                 newstyle=True,
             )
             env.filters.update(

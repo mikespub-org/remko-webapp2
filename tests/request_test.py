@@ -130,8 +130,7 @@ class TestRequest(BaseTestCase):
 
     def test_cookie_unicode(self):
         import base64
-
-        from six.moves.urllib.parse import quote, unquote
+        from urllib.parse import quote, unquote
 
         # With base64 ---------------------------------------------------------
 

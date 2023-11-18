@@ -18,8 +18,7 @@ Tests for webapp2 webapp2.RequestHandler
 import os
 import sys
 import unittest
-
-from six.moves.urllib.parse import unquote_plus
+from urllib.parse import unquote_plus
 
 import webapp2
 
@@ -401,23 +400,27 @@ class TestHandler(BaseTestCase):
     def test_run(self):
         os.environ["REQUEST_METHOD"] = "GET"
 
-        with mock.patch("webapp2.handlers.sys.stdin") as patched_stdin:
-            with mock.patch("webapp2.handlers.sys.stdout") as patched_stdout:
-                patched_stdin.return_value = getattr(sys.stdin, "buffer", sys.stdin)
-                patched_stdout.return_value = getattr(sys.stdout, "buffer", sys.stdout)
+        with (
+            mock.patch("webapp2.handlers.sys.stdin") as patched_stdin,
+            mock.patch("webapp2.handlers.sys.stdout") as patched_stdout,
+        ):
+            patched_stdin.return_value = getattr(sys.stdin, "buffer", sys.stdin)
+            patched_stdout.return_value = getattr(sys.stdout, "buffer", sys.stdout)
 
-                app.run()
+            app.run()
         # self.assertEqual(sys.stdout.read(), DEFAULT_RESPONSE)
 
     def test_run_bare(self):
         os.environ["REQUEST_METHOD"] = "GET"
 
-        with mock.patch("webapp2.handlers.sys.stdin") as patched_stdin:
-            with mock.patch("webapp2.handlers.sys.stdout") as patched_stdout:
-                patched_stdin.return_value = getattr(sys.stdin, "buffer", sys.stdin)
-                patched_stdout.return_value = getattr(sys.stdout, "buffer", sys.stdout)
+        with (
+            mock.patch("webapp2.handlers.sys.stdin") as patched_stdin,
+            mock.patch("webapp2.handlers.sys.stdout") as patched_stdout,
+        ):
+            patched_stdin.return_value = getattr(sys.stdin, "buffer", sys.stdin)
+            patched_stdout.return_value = getattr(sys.stdout, "buffer", sys.stdout)
 
-                app.run(bare=True)
+            app.run(bare=True)
         # self.assertEqual(sys.stdout.read(), DEFAULT_RESPONSE)
 
     def test_run_debug(self):
@@ -426,12 +429,14 @@ class TestHandler(BaseTestCase):
         os.environ["REQUEST_METHOD"] = "GET"
         os.environ["PATH_INFO"] = "/"
 
-        with mock.patch("webapp2.handlers.sys.stdin") as patched_stdin:
-            with mock.patch("webapp2.handlers.sys.stdout") as patched_stdout:
-                patched_stdin.return_value = getattr(sys.stdin, "buffer", sys.stdin)
-                patched_stdout.return_value = getattr(sys.stdout, "buffer", sys.stdout)
+        with (
+            mock.patch("webapp2.handlers.sys.stdin") as patched_stdin,
+            mock.patch("webapp2.handlers.sys.stdout") as patched_stdout,
+        ):
+            patched_stdin.return_value = getattr(sys.stdin, "buffer", sys.stdin)
+            patched_stdout.return_value = getattr(sys.stdout, "buffer", sys.stdout)
 
-                app.run(bare=True)
+            app.run(bare=True)
         # self.assertEqual(sys.stdout.read(), DEFAULT_RESPONSE)
 
         app.debug = debug
@@ -469,7 +474,7 @@ class TestHandler(BaseTestCase):
 
         req = webapp2.Request.blank("http://localhost:80/")
         req.route = webapp2.Route("")
-        req.route_args = tuple()
+        req.route_args = ()
         req.route_kwargs = {}
         req.app = app
         app.set_globals(app=app, request=req)

@@ -102,7 +102,6 @@ class TestSecureCookieSession(BaseTestCase):
         self.assertRaises(KeyError, session.pop, "foo")
 
     def test_flashes(self):
-
         # Round 1 -------------------------------------------------------------
 
         req = webapp2.Request.blank("/")
@@ -168,7 +167,6 @@ class TestSecureCookieSession(BaseTestCase):
         self.assertEqual(flashes, [])
 
     def test_set_secure_cookie(self):
-
         rsp = webapp2.Response()
 
         # Round 1 -------------------------------------------------------------

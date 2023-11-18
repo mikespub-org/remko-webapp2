@@ -4,11 +4,11 @@ Jinja2==3.1.2
 # The remaining requirements are defined by webapp2. These are the versions
 # that were used with release 2.5.2, except for babel.
 six==1.16.0
-Mako==1.2.4
-Babel==2.11.0
+Mako==1.3.0
+Babel==2.13.1
 gaepytz==2011h
 # Test dependencies.
-pytest==7.2.0
-pytest-cov==4.0.0
-mock==4.0.3
+pytest==7.4.3
+pytest-cov==4.1.0
+mock==5.1.0
 gcp-devrel-py-tools==0.0.16

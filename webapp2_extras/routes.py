@@ -18,7 +18,8 @@ webapp2_extras.routes
 
 Extra route classes for webapp2.
 """
-from six.moves.urllib import parse
+from urllib import parse
+
 from webob import exc
 
 import webapp2

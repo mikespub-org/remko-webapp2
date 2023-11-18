@@ -217,7 +217,7 @@ class TestResponse(test_base.BaseTestCase):
         self.assertEqual(list(rsp.headers.values()), ["y"])
         self.assertEqual(list(rsp.headers.items()), test)
         rsp.headers = test
-        self.assertFalse(list() is test)  # must be copy!
+        self.assertFalse([] is test)  # must be copy!
 
         rsp = webapp2.Response()
         h = rsp.headers

@@ -30,7 +30,6 @@ class TestMemcacheSession(test_base.BaseTestCase):
     # factory = sessions_memcache.MemcacheSessionFactory
 
     def test_get_save_session(self):
-
         # Round 1 -------------------------------------------------------------
 
         req = webapp2.Request.blank("/")
@@ -80,7 +79,6 @@ class TestMemcacheSession(test_base.BaseTestCase):
         self.assertEqual(session["g"], "h")
 
     def test_flashes(self):
-
         # Round 1 -------------------------------------------------------------
 
         req = webapp2.Request.blank("/")

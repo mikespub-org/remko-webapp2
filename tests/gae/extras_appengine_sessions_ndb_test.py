@@ -37,7 +37,6 @@ class TestNdbSession(test_base.BaseTestCase):
         self.register_model("Session", sessions_ndb.Session)
 
     def test_get_save_session(self):
-
         # Round 1 -------------------------------------------------------------
 
         req = webapp2.Request.blank("/")
@@ -104,7 +103,6 @@ class TestNdbSession(test_base.BaseTestCase):
         self.assertEqual(session["g"], "h")
 
     def test_flashes(self):
-
         # Round 1 -------------------------------------------------------------
 
         req = webapp2.Request.blank("/")
@@ -170,7 +168,6 @@ class TestNdbSession(test_base.BaseTestCase):
         self.assertEqual(flashes, [])
 
     def test_misc(self):
-
         s = sessions_ndb.Session(id="foo")
         key = s.put()
 

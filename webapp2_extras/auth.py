@@ -427,11 +427,9 @@ class Auth:
             A user dict or None.
         """
         if self._user is not None:
-            assert (
-                self._user is not _anon
-                and self._user["user_id"] == user_id
-                and self._user["token"] == token
-            )
+            assert self._user is not _anon
+            assert self._user["user_id"] == user_id
+            assert self._user["token"] == token
             return self._user_or_none()
 
         if cache and cache_ts:
