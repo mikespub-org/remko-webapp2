@@ -23,6 +23,7 @@ Taking Google App Engine's webapp to the next level!
 """
 
 import cgi
+import html
 import inspect
 import logging
 import os
@@ -42,36 +43,12 @@ from webob import exc
 
 _webapp = _webapp_util = _local = None
 
-try:  # pragma: no cover
-    # WebOb < 1.0 (App Engine Python 2.5).
-    from webob.headerdict import HeaderDict as BaseResponseHeaders
-    from webob.statusreasons import status_reasons
-except ImportError:  # pragma: no cover
-    # WebOb >= 1.0.
-    from webob.headers import ResponseHeaders as BaseResponseHeaders
-    from webob.util import status_reasons
+from webob.headers import ResponseHeaders as BaseResponseHeaders
+from webob.util import status_reasons
 
-try:  # pragma no cover
-    import html
-except ImportError:
-    html = cgi
+from webapp2_extras import local
 
-# google.appengine.ext.webapp imports webapp2 in the
-# App Engine Python 2.7 runtime.
-if os.environ.get('APPENGINE_RUNTIME') != 'python27':  # pragma: no cover
-    try:
-        from google.appengine.ext import webapp as _webapp
-    except ImportError:  # pragma: no cover
-        # Running webapp2 outside of GAE.
-        pass
-
-try:  # pragma: no cover
-    # Thread-local variables container.
-    from webapp2_extras import local
-    _local = local.Local()
-except ImportError:  # pragma: no cover
-    logging.warning("webapp2_extras.local is not available "
-                    "so webapp2 won't be thread-safe!")
+_local = local.Local()
 
 __version_info__ = (3, 0, 0)
 __version__ = '.'.join(str(n) for n in __version_info__)
