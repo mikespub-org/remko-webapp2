@@ -15,6 +15,7 @@
 import unittest
 
 import webapp2
+from tests.test_base import BaseTestCase
 from webapp2_extras.routes import (
     DomainRoute,
     HandlerPrefixRoute,
@@ -22,8 +23,6 @@ from webapp2_extras.routes import (
     PathPrefixRoute,
     RedirectRoute,
 )
-
-from tests.test_base import BaseTestCase
 
 
 class HomeHandler(webapp2.RequestHandler):

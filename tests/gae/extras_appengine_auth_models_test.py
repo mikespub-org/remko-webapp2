@@ -14,10 +14,9 @@
 
 from google.appengine.ext.ndb import model
 
+from tests.gae import test_base
 from webapp2_extras import auth
 from webapp2_extras.appengine.auth import models
-
-from tests.gae import test_base
 
 
 class UniqueConstraintViolation(Exception):
@@ -162,7 +161,7 @@ class TestUniqueModel(test_base.BaseTestCase):
     def test_single(self):
         def create_user(username):
             # Assemble the unique scope/value combinations.
-            unique_username = "User.username:%s" % username
+            unique_username = f"User.username:{username}"
 
             # Create the unique username, auth_id and email.
             success = models.Unique.create(unique_username)
@@ -172,7 +171,7 @@ class TestUniqueModel(test_base.BaseTestCase):
                 user.put()
                 return user
             else:
-                raise UniqueConstraintViolation("Username %s already exists" % username)
+                raise UniqueConstraintViolation(f"Username {username} already exists")
 
         create_user("username_1")
         self.assertRaises(UniqueConstraintViolation, create_user, "username_1")
@@ -183,9 +182,9 @@ class TestUniqueModel(test_base.BaseTestCase):
     def test_multi(self):
         def create_user(username, auth_id, email):
             # Assemble the unique scope/value combinations.
-            unique_username = "User.username:%s" % username
-            unique_auth_id = "User.auth_id:%s" % auth_id
-            unique_email = "User.email:%s" % email
+            unique_username = f"User.username:{username}"
+            unique_auth_id = f"User.auth_id:{auth_id}"
+            unique_email = f"User.email:{email}"
 
             # Create the unique username, auth_id and email.
             uniques = [unique_username, unique_auth_id, unique_email]
@@ -198,14 +197,12 @@ class TestUniqueModel(test_base.BaseTestCase):
             else:
                 if unique_username in existing:
                     raise UniqueConstraintViolation(
-                        "Username %s already exists" % username
+                        f"Username {username} already exists"
                     )
                 if unique_auth_id in existing:
-                    raise UniqueConstraintViolation(
-                        "Auth id %s already exists" % auth_id
-                    )
+                    raise UniqueConstraintViolation(f"Auth id {auth_id} already exists")
                 if unique_email in existing:
-                    raise UniqueConstraintViolation("Email %s already exists" % email)
+                    raise UniqueConstraintViolation(f"Email {email} already exists")
 
         create_user("username_1", "auth_id_1", "email_1")
         self.assertRaises(

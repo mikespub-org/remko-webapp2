@@ -53,8 +53,8 @@ class TestJinja2(unittest.TestCase):
             config={
                 "webapp2_extras.jinja2": {
                     "template_path": template_path,
-                    "globals": dict(foo="fooglobal"),
-                    "filters": dict(foo=lambda x: x + "-foofilter"),
+                    "globals": {"foo": "fooglobal"},
+                    "filters": {"foo": lambda x: x + "-foofilter"},
                 },
             }
         )

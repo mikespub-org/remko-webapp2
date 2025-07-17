@@ -1,4 +1,4 @@
-from jinja2.runtime import Undefined, missing
+from jinja2.runtime import missing
 
 name = "template1.html"
 
@@ -6,7 +6,6 @@ name = "template1.html"
 def root(context, missing=missing):
     resolve = context.resolve_or_missing
     undefined = environment.undefined
-    cond_expr_undefined = Undefined
     if 0:
         yield None
     l_0_message = resolve("message")

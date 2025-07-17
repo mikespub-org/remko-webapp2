@@ -17,14 +17,14 @@ import webapp2
 
 class HomeHandler(webapp2.RequestHandler):
     def get(self, **kwargs):
-        html = '<a href="%s">test item</a>' % self.url_for("view", item="test")
+        html = '<a href="{}">test item</a>'.format(self.url_for("view", item="test"))
         self.response.out.write(html)
 
 
 class ViewHandler(webapp2.RequestHandler):
     def get(self, **kwargs):
         item = kwargs.get("item")
-        self.response.out.write('You are viewing item "%s".' % item)
+        self.response.out.write(f'You are viewing item "{item}".')
 
 
 class HandlerWithError(webapp2.RequestHandler):

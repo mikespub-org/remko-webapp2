@@ -244,8 +244,7 @@ class AuthStore:
             return [data.get(k) for k in self.session_attributes]
         except AssertionError:
             logging.warning(
-                "Invalid user data: %r. Expected attributes: %r."
-                % (data, self.session_attributes)
+                f"Invalid user data: {data!r}. Expected attributes: {self.session_attributes!r}."
             )
             return None
 
@@ -262,8 +261,7 @@ class AuthStore:
             return dict(zip(self.session_attributes, data))
         except AssertionError:
             logging.warning(
-                "Invalid user data: %r. Expected attributes: %r."
-                % (data, self.session_attributes)
+                f"Invalid user data: {data!r}. Expected attributes: {self.session_attributes!r}."
             )
             return None
 

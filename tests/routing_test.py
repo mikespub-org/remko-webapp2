@@ -16,9 +16,8 @@ import random
 import unittest
 
 import webapp2
-from webapp2 import BaseRoute, Request, Route, Router
-
 from tests.test_base import BaseTestCase
+from webapp2 import BaseRoute, Request, Route, Router
 
 
 class TestRoute(BaseTestCase):
@@ -68,7 +67,7 @@ class TestRoute(BaseTestCase):
         self.assertEqual(
             route.match(Request.blank("/bar")), (route, (), {"foo": "bar"})
         )
-        url = route.build(Request.blank("/"), (), dict(foo="baz"))
+        url = route.build(Request.blank("/"), (), {"foo": "baz"})
         self.assertEqual(url, "/baz")
 
     def test_expr_variable(self):
@@ -80,12 +79,12 @@ class TestRoute(BaseTestCase):
         self.assertEqual(
             route.match(Request.blank("/1900")), (route, (), {"year": "1900"})
         )
-        url = route.build(Request.blank("/"), (), dict(year="2010"))
+        url = route.build(Request.blank("/"), (), {"year": "2010"})
         self.assertEqual(url, "/2010")
 
     def test_expr_variable2(self):
         route = Route(r"/<year:\d{4}>/foo/", None)
-        url = route.build(Request.blank("/"), (), dict(year="2010"))
+        url = route.build(Request.blank("/"), (), {"year": "2010"})
         self.assertEqual(url, "/2010/foo/")
 
     def test_build_missing_argument(self):
@@ -110,48 +109,48 @@ class TestRoute(BaseTestCase):
     def test_build_missing_keyword2(self):
         route = Route(r"/<year:\d{4}>/<month:\d{2}>", None)
         self.assertRaises(
-            KeyError, route.build, Request.blank("/"), (), dict(year="2010")
+            KeyError, route.build, Request.blank("/"), (), {"year": "2010"}
         )
 
     def test_build_invalid_keyword(self):
         route = Route(r"/<year:\d{4}>", None)
         self.assertRaises(
-            ValueError, route.build, Request.blank("/"), (), dict(year="20100")
+            ValueError, route.build, Request.blank("/"), (), {"year": "20100"}
         )
 
     def test_build_invalid_keyword2(self):
         route = Route(r"/<year:\d{4}>", None)
         self.assertRaises(
-            ValueError, route.build, Request.blank("/"), (), dict(year="201a")
+            ValueError, route.build, Request.blank("/"), (), {"year": "201a"}
         )
 
     def test_build_with_unnamed_variable(self):
         route = Route(r"/<:\d{4}>/<month:\d{2}>", None)
 
-        url = route.build(Request.blank("/"), (2010,), dict(month=10))
+        url = route.build(Request.blank("/"), (2010,), {"month": 10})
         self.assertEqual(url, "/2010/10")
 
-        url = route.build(Request.blank("/"), ("1999",), dict(month="07"))
+        url = route.build(Request.blank("/"), ("1999",), {"month": "07"})
         self.assertEqual(url, "/1999/07")
 
     def test_build_default_keyword(self):
         route = Route(r"/<year:\d{4}>/<month:\d{2}>", None, defaults={"month": 10})
         r = Request.blank("/")
-        url = route.build(r, (), dict(year="2010"))
+        url = route.build(r, (), {"year": "2010"})
         self.assertEqual(url, "/2010/10")
 
         route = Route(r"/<year:\d{4}>/<month:\d{2}>", None, defaults={"year": 1900})
-        url = route.build(Request.blank("/"), (), dict(month="07"))
+        url = route.build(Request.blank("/"), (), {"month": "07"})
         self.assertEqual(url, "/1900/07")
 
     def test_build_extra_keyword(self):
         route = Route(r"/<year:\d{4}>", None)
         r = Request.blank("/")
-        url = route.build(r, (), dict(year="2010", foo="bar"))
+        url = route.build(r, (), {"year": "2010", "foo": "bar"})
         self.assertEqual(url, "/2010?foo=bar")
         # Arguments are sorted.
         url = route.build(
-            Request.blank("/"), (), dict(year="2010", foo="bar", baz="ding")
+            Request.blank("/"), (), {"year": "2010", "foo": "bar", "baz": "ding"}
         )
         self.assertEqual(url, "/2010?baz=ding&foo=bar")
 
@@ -161,20 +160,20 @@ class TestRoute(BaseTestCase):
         url = route.build(
             Request.blank("/"),
             ("08", "i-should-be-ignored", "me-too"),
-            dict(year="2010", foo="bar"),
+            {"year": "2010", "foo": "bar"},
         )
         self.assertEqual(url, "/2010/08?foo=bar")
 
         url = route.build(
             Request.blank("/"),
             ("08", "i-should-be-ignored", "me-too"),
-            dict(year="2010", foo="bar", baz="ding"),
+            {"year": "2010", "foo": "bar", "baz": "ding"},
         )
         self.assertEqual(url, "/2010/08?baz=ding&foo=bar")
 
     def test_build_int_keyword(self):
         route = Route(r"/<year:\d{4}>", None)
-        url = route.build(Request.blank("/"), (), dict(year=2010))
+        url = route.build(Request.blank("/"), (), {"year": 2010})
         self.assertEqual(url, "/2010")
 
     def test_build_int_variable(self):
@@ -186,7 +185,7 @@ class TestRoute(BaseTestCase):
         router = Router(None)
         router.add(Route(r"/<year:\d{4}>", None, name="year-page"))
 
-        url = router.build(Request.blank("/"), "year-page", (), dict(year="2010"))
+        url = router.build(Request.blank("/"), "year-page", (), {"year": "2010"})
 
         self.assertEqual(url, "/2010")
 
@@ -196,7 +195,7 @@ class TestRoute(BaseTestCase):
             Request.blank("/"),
             "i-dont-exist",
             (),
-            dict(year="2010"),
+            {"year": "2010"},
         )
 
     def test_reverse_template(self):
@@ -227,10 +226,10 @@ class TestRoute(BaseTestCase):
         router = Router(None)
         router.add(Route(r"/hello", None, name="hello"))
         self.assertRaises(
-            AttributeError, router.build, None, "hello", (), dict(_full=True)
+            AttributeError, router.build, None, "hello", (), {"_full": True}
         )
         self.assertRaises(
-            AttributeError, router.build, None, "hello", (), dict(_scheme="https")
+            AttributeError, router.build, None, "hello", (), {"_scheme": "https"}
         )
 
     def test_positions(self):

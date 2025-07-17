@@ -19,7 +19,6 @@ import webob
 import webob.exc
 
 import webapp2
-
 from tests.test_base import BaseTestCase
 
 

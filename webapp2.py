@@ -370,7 +370,7 @@ class ResponseHeaders(BaseResponseHeaders):
 
     def __str__(self):
         """Returns the formatted headers ready for HTTP transmission."""
-        return "\r\n".join(["%s: %s" % v for v in self.items()] + ["", ""])
+        return "\r\n".join(["{}: {}".format(*v) for v in self.items()] + ["", ""])
 
 
 class Response(webob.Response):
@@ -435,7 +435,7 @@ class Response(webob.Response):
 
             if not isinstance(value, str):
                 raise TypeError(
-                    "You must set status to a string or integer (not %s)" % type(value)
+                    f"You must set status to a string or integer (not {type(value)})"
                 )
 
             parts = value.split(" ", 1)
@@ -817,7 +817,7 @@ class BaseRoute:
             If True, this route never matches and is used only to build URIs.
         """
         if build_only and name is None:
-            raise ValueError("Route %r is build_only but doesn't have a name." % self)
+            raise ValueError(f"Route {self!r} is build_only but doesn't have a name.")
 
         self.template = template
         self.handler = handler
@@ -1015,7 +1015,7 @@ class Route(BaseRoute):
             if handler_method:
                 raise ValueError(
                     "If handler_method is defined in a Route, handler "
-                    "can't have a colon (got %r)." % handler
+                    f"can't have a colon (got {handler!r})."
                 )
             else:
                 self.handler, self.handler_method = handler.rsplit(":", 1)
@@ -1092,15 +1092,17 @@ class Route(BaseRoute):
         for name, regex in variables.items():
             value = kwargs.pop(name, self.defaults.get(name))
             if value is None:
-                raise KeyError('Missing argument "%s" to build URI.' % name.strip("_"))
+                raise KeyError(
+                    'Missing argument "{}" to build URI.'.format(name.strip("_"))
+                )
 
             if not isinstance(value, str):
                 value = str(value)
 
             if not regex.match(value):
                 raise ValueError(
-                    'URI building error: Value "%s" is not supported'
-                    'for argument "%s".' % (value, name.strip("_"))
+                    'URI building error: Value "{}" is not supported'
+                    'for argument "{}".'.format(value, name.strip("_"))
                 )
 
             values[name] = value
@@ -1108,13 +1110,7 @@ class Route(BaseRoute):
         return self.reverse_template % values, kwargs
 
     def __repr__(self):
-        return "<Route({!r}, {!r}, name={!r}, defaults={!r}, build_only={!r})>".format(
-            self.template,
-            self.handler,
-            self.name,
-            self.defaults,
-            self.build_only,
-        )
+        return f"<Route({self.template!r}, {self.handler!r}, name={self.name!r}, defaults={self.defaults!r}, build_only={self.build_only!r})>"
 
 
 class BaseHandlerAdapter:
@@ -1318,7 +1314,7 @@ class Router:
         """
         route = self.build_routes.get(name)
         if route is None:
-            raise KeyError("Route named %r is not defined." % name)
+            raise KeyError(f"Route named {name!r} is not defined.")
 
         return route.build(request, args, kwargs)
 
@@ -1384,7 +1380,7 @@ class Router:
             v for k, v in self.build_routes.items() if v not in self.match_routes
         ]
 
-        return "<Router(%r)>" % routes
+        return f"<Router({routes!r})>"
 
     # Default matcher, builder, dispatcher and adapter.
     match = default_matcher
@@ -1758,8 +1754,8 @@ class ImportStringError(Exception):
             if imported:
                 tracked.append((name, imported.__file__))
             else:
-                track = ["- %r found in %r." % rv for rv in tracked]
-                track.append("- %r not found." % name)
+                track = ["- {!r} found in {!r}.".format(*rv) for rv in tracked]
+                track.append(f"- {name!r} not found.")
                 msg = msg % (
                     import_name,
                     exception.__class__.__name__,
@@ -1923,7 +1919,7 @@ def abort(code, *args, **kwargs):
     """
     cls = exc.status_map.get(code)
     if not cls:
-        raise KeyError("No exception is defined for code %r." % code)
+        raise KeyError(f"No exception is defined for code {code!r}.")
 
     raise cls(*args, **kwargs)
 
@@ -2019,7 +2015,7 @@ def _to_utf8(value):
     if isinstance(value, (bytes, type(None))):
         return value
     if not isinstance(value, str):
-        raise TypeError("Expected bytes, unicode, or None; got %r" % type(value))
+        raise TypeError(f"Expected bytes, unicode, or None; got {type(value)!r}")
     return value.encode("utf-8")
 
 
@@ -2037,7 +2033,7 @@ def _to_basestring(value):
     if isinstance(value, str):
         return value
     if not isinstance(value, bytes):
-        raise TypeError("Expected bytes, unicode, or None; got %r" % type(value))
+        raise TypeError(f"Expected bytes, unicode, or None; got {type(value)!r}")
     return value.decode("utf-8")
 
 
@@ -2058,7 +2054,7 @@ def _parse_route_template(template, default_sufix=""):
 
         pattern += f"{re.escape(part)}(?P<{name}>{expr})"
         reverse_template += f"{part}%({name})s"
-        variables[name] = re.compile("^%s$" % expr)
+        variables[name] = re.compile(f"^{expr}$")
 
     part = template[last:]
     kwargs_count = len(variables) - args_count

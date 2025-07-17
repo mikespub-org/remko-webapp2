@@ -15,9 +15,8 @@
 import os
 
 import webapp2
-from webapp2_extras.appengine import users
-
 from tests.gae import test_base
+from webapp2_extras.appengine import users
 
 
 def set_current_user(email, user_id, is_admin=False):

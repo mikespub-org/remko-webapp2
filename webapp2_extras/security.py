@@ -135,7 +135,7 @@ def generate_password_hash(password, method="sha1", length=22, pepper=None):
     salt = method != "plain" and generate_random_string(length) or ""
     hashval = hash_password(password, method, salt, pepper)
     if hashval is None:
-        raise TypeError("Invalid method %r." % method)
+        raise TypeError(f"Invalid method {method!r}.")
 
     return f"{hashval}${method}${salt}"
 

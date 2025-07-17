@@ -17,7 +17,6 @@ import unittest
 import six
 
 import webapp2
-
 from tests import test_base
 
 
@@ -45,37 +44,37 @@ class TestResponse(test_base.BaseTestCase):
         rsp.write(var_1)
         rsp.write(var_2)
         rsp.write(var_3)
-        self.assertEqual(rsp.body, webapp2._to_utf8("%rfoobar" % var_1))
+        self.assertEqual(rsp.body, webapp2._to_utf8(f"{var_1!r}foobar"))
 
         rsp = webapp2.Response()
         rsp.write(var_1)
         rsp.write(var_3)
         rsp.write(var_2)
-        self.assertEqual(rsp.body, webapp2._to_utf8("%rbarfoo" % var_1))
+        self.assertEqual(rsp.body, webapp2._to_utf8(f"{var_1!r}barfoo"))
 
         rsp = webapp2.Response()
         rsp.write(var_2)
         rsp.write(var_1)
         rsp.write(var_3)
-        self.assertEqual(rsp.body, webapp2._to_utf8("foo%rbar" % var_1))
+        self.assertEqual(rsp.body, webapp2._to_utf8(f"foo{var_1!r}bar"))
 
         rsp = webapp2.Response()
         rsp.write(var_2)
         rsp.write(var_3)
         rsp.write(var_1)
-        self.assertEqual(rsp.body, webapp2._to_utf8("foobar%r" % var_1))
+        self.assertEqual(rsp.body, webapp2._to_utf8(f"foobar{var_1!r}"))
 
         rsp = webapp2.Response()
         rsp.write(var_3)
         rsp.write(var_1)
         rsp.write(var_2)
-        self.assertEqual(rsp.body, webapp2._to_utf8("bar%rfoo" % var_1))
+        self.assertEqual(rsp.body, webapp2._to_utf8(f"bar{var_1!r}foo"))
 
         rsp = webapp2.Response()
         rsp.write(var_3)
         rsp.write(var_2)
         rsp.write(var_1)
-        self.assertEqual(rsp.body, webapp2._to_utf8("barfoo%r" % var_1))
+        self.assertEqual(rsp.body, webapp2._to_utf8(f"barfoo{var_1!r}"))
 
     def test_write2(self):
         rsp = webapp2.Response()

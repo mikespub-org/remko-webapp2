@@ -130,7 +130,7 @@ class TestWebapp1(test_base.BaseTestCase):
         quoted_value = urllib.quote(initial_value.encode("utf-8"))
 
         rsp = webapp.Response()
-        rsp.headers["Set-Cookie"] = "app=%s; Path=/" % quoted_value
+        rsp.headers["Set-Cookie"] = f"app={quoted_value}; Path=/"
 
         cookie = rsp.headers.get("Set-Cookie")
         req = webapp.Request.blank("/", headers=[("Cookie", cookie)])

@@ -15,9 +15,8 @@
 import unittest
 
 import webapp2
-from webapp2_extras import sessions
-
 from tests.test_base import BaseTestCase
+from webapp2_extras import sessions
 
 app = webapp2.WSGIApplication(
     config={

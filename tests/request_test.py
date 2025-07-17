@@ -17,7 +17,6 @@ import unittest
 import six
 
 import webapp2
-
 from tests.test_base import BaseTestCase
 
 
@@ -25,12 +24,11 @@ def _norm_req(s):
     return "\r\n".join(s.strip().replace("\r", "").split("\n"))
 
 
-_test_req = (
-    """
+_test_req = """
 POST /webob/ HTTP/1.0
 Accept: */*
 Cache-Control: max-age=0
-Content-Type: multipart/form-data; boundary=%s
+Content-Type: multipart/form-data; boundary={}
 Host: pythonpaste.org
 User-Agent: UserAgent/1.0 (identifier-version) library/7.0 otherlibrary/0.8
 
@@ -45,8 +43,8 @@ Content-type: application/octet-stream
 these are the contents of the file 'bar.txt'
 
 ------------------------------deb95b63e42a--
-"""
-    % "----------------------------deb95b63e42a"
+""".format(
+    "----------------------------deb95b63e42a"
 )
 
 _test_req2 = """

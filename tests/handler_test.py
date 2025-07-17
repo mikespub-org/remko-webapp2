@@ -21,7 +21,6 @@ import unittest
 from urllib.parse import unquote_plus
 
 import webapp2
-
 from tests.test_base import BaseTestCase
 
 try:
@@ -126,7 +125,7 @@ class InitializeHandler(webapp2.RequestHandler):
         pass
 
     def get(self):
-        self.response.out.write("Request method: %s" % self.request.method)
+        self.response.out.write(f"Request method: {self.request.method}")
 
 
 class WebDavHandler(webapp2.RequestHandler):
@@ -628,7 +627,7 @@ class TestHandler(BaseTestCase):
             req.method = method
             rsp = req.get_response(app)
             self.assertEqual(rsp.status_int, 200)
-            self.assertEqual(rsp.body, webapp2._to_utf8("Method: %s" % method))
+            self.assertEqual(rsp.body, webapp2._to_utf8(f"Method: {method}"))
 
         # Restore initial values.
         app.allowed_methods = allowed_methods_backup

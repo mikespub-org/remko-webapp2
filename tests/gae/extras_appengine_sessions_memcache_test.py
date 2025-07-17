@@ -13,9 +13,8 @@
 # limitations under the License.
 
 import webapp2
-from webapp2_extras import sessions
-
 from tests.gae import test_base
+from webapp2_extras import sessions
 
 app = webapp2.WSGIApplication(
     config={

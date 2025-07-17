@@ -15,10 +15,9 @@
 from google.appengine.api import memcache
 
 import webapp2
+from tests.gae import test_base
 from webapp2_extras import sessions
 from webapp2_extras.appengine import sessions_ndb
-
-from tests.gae import test_base
 
 app = webapp2.WSGIApplication(
     config={
