@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 webapp2_extras.jinja2
 =====================
@@ -25,7 +24,6 @@ import importlib
 import webapp2
 
 _jinja2 = importlib.import_module("jinja2")
-
 
 #: Default configuration values for this module. Keys are:
 #:
@@ -42,8 +40,7 @@ _jinja2 = importlib.import_module("jinja2")
 #:
 #: environment_args
 #:     Keyword arguments used to instantiate the Jinja2 environment. By
-#:     default autoescaping is enabled and two extensions are set:
-#:     ``jinja2.ext.autoescape`` and ``jinja2.ext.with_``. For production it
+#:     default, the ``jinja2.ext.i18n`` extension is set. For production it
 #:     may be a good idea to set 'auto_reload' to False -- we don't need to
 #:     check if templates changed after deployed.
 #:
@@ -53,16 +50,13 @@ _jinja2 = importlib.import_module("jinja2")
 #: filters
 #:     Extra filters for the Jinja2 environment.
 default_config = {
-    "template_path": "templates",
-    "compiled_path": None,
-    "force_compiled": False,
-    "environment_args": {
-        "autoescape": True,
-        "extensions": [],
-        # "extensions": [
-        #     "jinja2.ext.autoescape",
-        #     "jinja2.ext.with_",
-        # ],
+    'template_path': 'templates',
+    'compiled_path': None,
+    'force_compiled': False,
+    'environment_args': {
+        'extensions': [
+            'jinja2.ext.i18n',
+        ],
     },
     "globals": None,
     "filters": None,
@@ -117,10 +111,9 @@ class Jinja2:
             self.config_key,
             default_values=default_config,
             user_values=config,
-            required_keys=None,
-        )
-        kwargs = config["environment_args"].copy()
-        enable_i18n = "jinja2.ext.i18n" in kwargs.get("extensions", [])
+            required_keys=None)
+        kwargs = config['environment_args'].copy()
+        enable_i18n = 'jinja2.ext.i18n' in kwargs.get('extensions', [])
 
         if "loader" not in kwargs:
             template_path = config["template_path"]
@@ -148,18 +141,15 @@ class Jinja2:
             from webapp2_extras import i18n
 
             env.install_gettext_callables(
-                i18n.gettext,
-                i18n.ngettext,
-                newstyle=True,
-            )
-            env.filters.update(
-                {
-                    "format_date": i18n.format_date,
-                    "format_time": i18n.format_time,
-                    "format_datetime": i18n.format_datetime,
-                    "format_timedelta": i18n.format_timedelta,
-                }
-            )
+                lambda x: i18n.gettext(x),
+                lambda s, p, n: i18n.ngettext(s, p, n),
+                newstyle=True)
+            env.filters.update({
+                'format_date': i18n.format_date,
+                'format_time': i18n.format_time,
+                'format_datetime': i18n.format_datetime,
+                'format_timedelta': i18n.format_timedelta,
+            })
 
         self.environment = env
 
@@ -202,7 +192,6 @@ class Jinja2:
 
 
 # Factories -------------------------------------------------------------------
-
 
 #: Key used to store :class:`Jinja2` in the app registry.
 _registry_key = "webapp2_extras.jinja2.Jinja2"
